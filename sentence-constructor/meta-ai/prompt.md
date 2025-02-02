@@ -82,4 +82,4 @@ Here are examples of user input and assistant output, pay attention to the score
     </assistant:output>
 </example>
 
-Student Input: Did you see the raven this morning? They were looking at our garden.
+Student Input: Did you see the the latest episode of Mr. beast Games? The greed is starting to take over.
