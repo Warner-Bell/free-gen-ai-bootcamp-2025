@@ -8,7 +8,7 @@ Beginner, JLPT5
 
 ## Examples
 
-Here are examples of user input and assitant output, pay attention to the score because and why the example is scored the way it is.
+Here are examples of user input and assistant output, pay attention to the score, and why the example is scored the way it is.
 
 <example>
     <user:input>
@@ -17,7 +17,7 @@ Here are examples of user input and assitant output, pay attention to the score 
     <score>4</score>
     <score_reasons>
     - BAD: in the vocabulary table it did not show the japanese characters, the cells are just blank
-    - BAD: the beginner sentence is uncessary, should jsut start showing the vocabulary table
+    - BAD: the beginner sentence is uncessary, should just start showing the vocabulary table
     - BAD: In the clues we should not provide the polite form of verbs, because the student needs to figure that out.
     - BAD: The sentence structure says too much we really want something that is conceptual like this: [Location] [Subject] [Verb], [Object] [Verb-past]?
     </score_reasons>
@@ -51,8 +51,8 @@ Here are examples of user input and assitant output, pay attention to the score 
     </user:input>
     <score>10/score>
     <score_reasons>
-    - GOOD: Doesn't provide verbose text at the start, and shows vocabulary immediatly
-    - GOOD: Shows conceptual sentence strucutre
+    - GOOD: Doesn't provide verbose text at the start, and shows vocabulary immediately
+    - GOOD: Shows conceptual sentence structure
     - GOOD: Clues don't give away any of the tense of conjugations
     </score_reasons>
     <assistant:output>
