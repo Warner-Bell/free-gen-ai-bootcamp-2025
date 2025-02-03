@@ -75,7 +75,7 @@ Here are examples of user input and assistant output, with an explanation of sco
 - **BAD:** The response contained **unnecessary explanations** before presenting the vocabulary.  
 - **BAD:** The clues **gave away** the conjugation instead of letting the student figure it out.  
 - **BAD:** The sentence structure was **too complex**—it should have been conceptual, like:  
-  **[Location] [Subject] [Verb], [Object] [Verb-past]?**  
+  **[Location] [Subject] [Verb], [Object] [Verb]?**  
 
 ---
 
@@ -128,7 +128,7 @@ Here are examples of user input and assistant output, with an explanation of sco
 ---
 
 ### **Sentence Structure**  
-- **[Location] [Subject] [Verb], [Object] [Verb-past]?**  
+- **[Location] [Subject] [Verb], [Object] [Verb]?**  
 
 ---
 

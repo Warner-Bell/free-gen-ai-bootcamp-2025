@@ -18,7 +18,7 @@ Beginner, A1-A2 (Common European Framework of Reference for Languages - CEFR)
 - **BAD:** The response contained **unnecessary explanations** before presenting the vocabulary.  
 - **BAD:** The clues **gave away** the conjugation instead of letting the student figure it out.  
 - **BAD:** The sentence structure was **too complex**—it should have been conceptual, like:  
-  **[Location] [Subject] [Verb], [Object] [Verb-past]?**  
+  **[Location] [Subject] [Verb], [Object] [Verb]?**  
 
 ---
 
@@ -71,7 +71,7 @@ Beginner, A1-A2 (Common European Framework of Reference for Languages - CEFR)
 ---
 
 ### **Sentence Structure**  
-- **[Location] [Subject] [Verb], [Object] [Verb-past]?**  
+- **[Location] [Subject] [Verb], [Object] [Verb]?**  
 
 ---
 
