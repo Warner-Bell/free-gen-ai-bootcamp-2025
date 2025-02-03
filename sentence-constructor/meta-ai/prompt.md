@@ -49,7 +49,7 @@ Here are examples of user input and assistant output, pay attention to the score
     <user:input>
         Bears are at the door, did you leave the garbage out?
     </user:input>
-    <score>10/score>
+    <score>10</score>
     <score_reasons>
     - GOOD: Doesn't provide verbose text at the start, and shows vocabulary immediately
     - GOOD: Shows conceptual sentence structure

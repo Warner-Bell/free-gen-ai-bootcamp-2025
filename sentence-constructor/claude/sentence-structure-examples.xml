@@ -1,43 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sentence-structure-examples>
     <example>
-        <sentence>The bird is black.</sentence>
+        <sentence>The episode is new.</sentence>
         <structure>[Subject] [Adjective].</structure>
     </example>
     <example>
-        <sentence>The cat is in the room.</sentence>
+        <sentence>The episode is in the series.</sentence>
         <structure>[Location] [Subject] [Verb].</structure>
     </example>
     <example>
-        <sentence>Put the book there.</sentence>
-        <structure>[Location] [Object] [Verb].</structure>
+        <sentence>Watch the new episode.</sentence>
+        <structure>[Object] [Verb].</structure>
     </example>
     <example>
-        <sentence>Did you see the dog?</sentence>
+        <sentence>Did you see the new episode?</sentence>
         <structure>[Subject] [Object] [Verb]?</structure>
     </example>
     <example>
-        <sentence>This morning, I saw the butterfly.</sentence>
+        <sentence>This morning, I watched the new episode.</sentence>
         <structure>[Time] [Subject] [Object] [Verb].</structure>
     </example>
     <example>
-        <sentence>Are you going?</sentence>
+        <sentence>Are the players becoming greedy?</sentence>
         <structure>[Subject] [Verb]?</structure>
     </example>
     <example>
-        <sentence>Did you eat the food?</sentence>
+        <sentence>Did you enjoy the episode?</sentence>
         <structure>[Object] [Verb]?</structure>
     </example>
     <example>
-        <sentence>The student is looking at the book.</sentence>
+        <sentence>The players are becoming greedy in the game.</sentence>
         <structure>[Subject] [Verb] [Location].</structure>
     </example>
     <example>
-        <sentence>The teacher is in the class, and they are reading a book.</sentence>
-        <structure>[Location] [Subject] [Verb], [Object] [Verb].</structure>
+        <sentence>The episode is about the game, and the players are becoming more greedy.</sentence>
+        <structure>[Location] [Subject] [Verb], [Subject] [Verb].</structure>
     </example>
     <example>
-        <sentence>I saw the train because it was loud.</sentence>
+        <sentence>I watched the episode because the players were becoming greedy.</sentence>
         <structure>[Time] [Subject] [Object] [Verb] [Reason] [Subject] [Verb].</structure>
     </example>
 </sentence-structure-examples>

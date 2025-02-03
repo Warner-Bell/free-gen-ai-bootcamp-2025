@@ -37,7 +37,7 @@
     <user:input>
         Bears are at the door, did you leave the garbage out?
     </user:input>
-    <score>10/score>
+    <score>10</score>
     <score_reasons>
     - GOOD: Doesn't provide verbose text at the start, and shows vocabulary immediatly
     - GOOD: Shows conceptual sentence strucutre
