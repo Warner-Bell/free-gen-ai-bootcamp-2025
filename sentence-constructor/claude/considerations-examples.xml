@@ -3,36 +3,34 @@
         <output>
 Considerations and Next Steps:
 
-- This sentence uses "therefore" as a connection between two ideas
-- In Japanese, we often use から (kara) to show cause and effect
-- The first part describes a state (being cold) in a location
-- The second part describes an action that needs to be done
-- Consider how to express "need to" in Japanese - this is often done with なければなりません
-- The word order will be different from English, with the verb coming at the end
+- This sentence contains two parts: a **question** in past tense and a **statement** about an ongoing change.
+- The first part asks if the person has seen something, so the verb **"to see"** must be in past tense.
+- The second part describes a change in state (players becoming greedy), so the verb **"to become"** needs to be in progressive tense.
+- Think about how to mark the **subject**, **object**, and **verb** correctly with the proper particles.
+- The structure of the sentence will be different in Japanese compared to English.
 
 You can:
 
-- Try forming the first part about it being cold
-- Ask about how to connect two ideas with "therefore"
-- Ask about how to express "need to" in Japanese
-- Make an attempt at the full sentence
+- Try forming the question using the vocabulary and past tense of "to see."
+- Ask about how to express "becoming" correctly in Japanese.
+- Attempt the full sentence and ask for feedback.
         </output>
         <score>6</score>
         <score:reason>
-            This examples output scores 6 because the returned information is too verbose
+            This example scores 6 because the explanation is too verbose.
         </score:reason>
     </example>
     <example>
         <output>
 Next Steps:
 
-- This sentence connects two ideas with から (therefore)
-- Try breaking it into: "cold in office" + "turn on heater"
-- Ask for help with any particle usage
+- This sentence consists of two parts: a **past tense question** and a **progressive change statement**.
+- Try breaking it into: **"see new episode?"** + **"players becoming greedy."**
+- Ask for help with verb conjugations or particle usage if needed.
         </output>
         <score>10</score>
         <score:reason>
-            This examples output scores 10 because the returned information is concise
+            This example scores 10 because the explanation is concise and directly actionable.
         </score:reason>
     </example>
 </examples>

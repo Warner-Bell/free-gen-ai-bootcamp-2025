@@ -88,7 +88,3 @@ When the input looks like a question about langauge learning then we can assume 
 - try and provide a non-nested bulleted list
 - talk about the vocabulary but leave out the japanese words because the student can refer to the vocabulary table.
 - refernece the <file>considerations-examples.xml</file> for good consideration examples
-
-Here are examples of user input and assistant output, pay attention to the score, and why the example is scored the way it is.
-
-Student Input: Did you see the new episode of Mr. beast Games? The players are becoming greedy.
