@@ -4,7 +4,7 @@
 
 GPT 4o
 
-> I have the paid version of ChatGPT.  GPT4o is faster than the o1 reasoning models and o1 has daily use limit.
+> I have the paid version of ChatGPT. 
 
 ## Prompting Guides
 
