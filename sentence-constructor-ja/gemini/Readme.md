@@ -29,9 +29,6 @@ Did you see the latest version of Mr. Beast games? The players are becoming gree
 
 
 ## Output:
-Did you see the latest version of Mr. Beast games? The players are becoming greedy.
-
-
 Okay, I'm in the Setup state. Here's the information to get the student started:
 
 Vocabulary Table:

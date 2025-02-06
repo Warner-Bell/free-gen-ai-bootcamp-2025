@@ -32,8 +32,6 @@ Did you see the latest version of Mr. Beast games? The players are becoming gree
 
 
 ## Output:
-Did you see the latest version of Mr. Beast games? The players are becoming greedy.
-
 Current State: Setup
 
 Let's break down the sentence into smaller parts. Here's a possible table of vocabulary to get you started:
