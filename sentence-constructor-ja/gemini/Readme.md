@@ -58,3 +58,11 @@ The "latest version" can be considered a single concept.
 "Mr. Beast" is typically written in katakana.
 Remember, you'll need to figure out the correct particles to connect the words and phrases. The vocabulary table does not include particles.
 Now, it's the student's turn to make an attempt.  Let me know what they come up with!
+
+## Initial Observations
+
+The model seems to perform as expected. 
+The model is aware of its initial state.
+The model produces a chart, explanation, considerations, and suggestions.
+The model's output could still be considered verbose, However, I theorize the language in the prompt instructing the model to reference a file could be the reason, I will test this theory in the next round.
+So far Gemeni has met initial expectation. 

@@ -53,3 +53,11 @@ You can:
 Try forming the question using the vocabulary and past tense.
 Ask about how to express "becoming" correctly in Japanese.
 Attempt the full sentence and ask for feedback.
+
+## Initial Observations
+
+The model seems to perform as expected. 
+The model is aware of its initial state.
+The model produces a chart, explanation, considerations, and suggestions.
+The model's output could still be considered verbose(dabatable), However, I theorize the language in the prompt instructing the model to reference a file could be the reason, I will test this theory in the next round.
+So far Meta ai has exceeded initial expectation.  

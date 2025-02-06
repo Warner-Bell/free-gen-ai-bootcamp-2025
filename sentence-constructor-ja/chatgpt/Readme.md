@@ -62,3 +62,12 @@ Did you see the latest version of Mr. Beast games? The players are becoming gree
 👉 **Next Steps:**  
 - Attempt the translation using the vocabulary and sentence structure.  
 - Ask for clues if needed. 🚀
+
+## Initial Observations
+
+The model seems to perform as expected. 
+The model is aware of its initial state.
+The model produces a chart, clues, considerations, and suggestions.
+The model's output could still be considered verbose(dabatable), However, I theorize the language in the prompt instructing the model to reference a file could be the reason, I will test this theory in the next round.
+The model included imojis in output without being instructed to do so, however I'm not surprised this is common behavior for GPT-4o.
+So far GPT 4o has met initial expectation. 

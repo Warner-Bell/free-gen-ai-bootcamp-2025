@@ -49,3 +49,11 @@ Next Steps:
 - Question contains past tense action + current state description
 - Break into two parts: "see latest show?" + "players becoming greedy"
 - Ask about verb conjugations or particle usage if needed
+
+## Initial Observations
+
+The model seems to perform as expected. 
+The model is aware of its initial state.
+The model produces a chart, and next Steps.
+The model's output seems to be truncated and missing key elements but is conise, However, I theorize the language in the prompt instructing the model to reference a file could be the reason, I will test this theory in the next round.
+So far Claude has not met initial expectation. 
