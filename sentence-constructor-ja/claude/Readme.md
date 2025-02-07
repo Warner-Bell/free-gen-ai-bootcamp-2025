@@ -54,6 +54,54 @@ Next Steps:
 
 The model seems to perform as expected. 
 The model is aware of its initial state.
-The model produces a chart, and next Steps.
+The model produces a chart, structure and next Steps. No Considerations or clues
 The model's output seems to be truncated and missing key elements but is conise, However, I theorize the language in the prompt instructing the model to reference a file could be the reason, I will test this theory in the next round.
-So far Claude has not met initial expectation. 
+So far Claude has met initial expectation. 
+
+
+## Secondary Output
+Current State: Setup
+
+| Japanese | Romaji | English |
+|----------|---------|----------|
+| 見る | miru | to see |
+| 最新 | saishin | latest |
+| バージョン | baashon | version |
+| ゲーム | geemu | game |
+| 選手 | senshu | player |
+| なる | naru | to become |
+| 欲張り | yokubari | greedy |
+
+Sentence Structure: 
+[Object] [Verb]? [Subject] [Adjective] [Verb].
+
+Next Steps:
+- This is a compound sentence with two parts: a question and a statement
+- Try breaking it into: "see latest version?" + "players becoming greedy"
+- Consider the different verb tenses needed for each part
+- Ask for help with particle usage or verb conjugations if needed
+
+## Secondary Observations
+The model seems to have produced no change. 
+The model is aware of its initial state.
+The model produces a chart, structure and next Steps. No Considerations or clues
+The model's output continues to be truncated and missing key elements, the original theory has failed, the model simply waits for a question to provide clues.
+So far Claude has met initial expectation. 
+
+The model will be presented a follow-up question(?)
+The model returned: "Current State: Clues
+Here are some helpful hints for forming this sentence:
+
+For the first part (question):
+Think about marking the question with か at the end
+Past tense questions in Japanese end with verb + か
+Consider which particle marks what you're seeing (direct object)
+
+For the second part (statement):
+Consider how to show a change in state (becoming)
+The verb なる works with に to show transformation
+Remember to connect the two parts appropriately
+
+Would you like specific clues about any of these points?
+Current vocabulary and structure remain the same for reference."
+The model has been the only model to initially follow the instruction(When the input looks like a question about langauge learning then we can assume the user is prompting to enter the Clues state), it does not give clues in initial out like the other models

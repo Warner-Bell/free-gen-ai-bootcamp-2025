@@ -31,7 +31,7 @@ Now here is the prompt again follow the instruction and provide the expected out
 Did you see the latest version of Mr. Beast games? The players are becoming greedy.
 
 
-## Output:
+## Initial Output:
 Current State: Setup
 
 Let's break down the sentence into smaller parts. Here's a possible table of vocabulary to get you started:
@@ -58,6 +58,31 @@ Attempt the full sentence and ask for feedback.
 
 The model seems to perform as expected. 
 The model is aware of its initial state.
-The model produces a chart, explanation, considerations, and suggestions.
-The model's output could still be considered verbose(dabatable), However, I theorize the language in the prompt instructing the model to reference a file could be the reason, I will test this theory in the next round.
+The model produces a chart, explanation, considerations, and things to try.
+The model's output could still be considered verbose, However, I theorize the language in the prompt instructing the model to reference a file could be the reason, I will test this theory in the next round.
 So far Meta ai has exceeded initial expectation.  
+
+
+## Secondary Output
+Our current state is Setup.
+Here's a table of vocabulary to help you get started:
+Japanese	Romaji	English
+ゲーム	gēmu	game
+プレーヤー	purēyā	player
+貪欲	donnoku	greedy
+なる	naru	to become
+A possible sentence structure could be:
+[Topic] [Subject] [Verb]。
+Some considerations and next steps:
+Think about how to express the idea of "becoming" greedy in Japanese.
+Consider how to use the vocabulary words in context.
+How will you structure the sentence to convey the meaning of the original English sentence?
+Your turn! What's your attempt at translating the sentence into Japanese?
+
+## Secondary Observations
+
+The model seems to perform as expected. 
+The model is aware of its initial state.
+The model produces a chart, structure, considerations, and Next Steps.
+The model's output is now very concise, My theory proves to be correct.
+So far Meta ai is exceeded initial expectation. 
