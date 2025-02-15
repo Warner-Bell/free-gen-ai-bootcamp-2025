@@ -1,8 +1,94 @@
+package models
+
+import (
+    "database/sql"
+    "time"
+)
+
+type Group struct {
+    ID          int64  `json:"id"`
+    Name        string `json:"name"`
+    Description string `json:"description,omitempty"`
+    CreatedAt   string `json:"created_at"`
+    UpdatedAt   string `json:"updated_at"`
+}
+
+type GroupModel struct {
+    db *sql.DB
+}
+
 type GroupWord struct {
     WordID    int64     `json:"word_id"`
     GroupID   int64     `json:"group_id"`
     CreatedAt time.Time `json:"created_at"`
     Word      Word      `json:"word"`
+}
+
+func NewGroupModel(db *sql.DB) *GroupModel {
+    return &GroupModel{db: db}
+}
+
+func (m *GroupModel) GetAll() ([]Group, error) {
+    rows, err := m.db.Query(`
+        SELECT id, name, description, created_at, updated_at 
+        FROM groups 
+        ORDER BY created_at DESC`)
+    if err != nil {
+        return nil, err
+    }
+    defer rows.Close()
+
+    var groups []Group
+    for rows.Next() {
+        var g Group
+        err := rows.Scan(
+            &g.ID,
+            &g.Name,
+            &g.Description,
+            &g.CreatedAt,
+            &g.UpdatedAt,
+        )
+        if err != nil {
+            return nil, err
+        }
+        groups = append(groups, g)
+    }
+    return groups, nil
+}
+
+func (m *GroupModel) Create(group *Group) error {
+    query := `
+        INSERT INTO groups (name, description, created_at, updated_at)
+        VALUES (?, ?, datetime('now'), datetime('now'))
+        RETURNING id, created_at, updated_at`
+    
+    return m.db.QueryRow(
+        query,
+        group.Name,
+        group.Description,
+    ).Scan(&group.ID, &group.CreatedAt, &group.UpdatedAt)
+}
+
+func (m *GroupModel) GetByID(id int64) (*Group, error) {
+    var group Group
+    err := m.db.QueryRow(`
+        SELECT id, name, description, created_at, updated_at 
+        FROM groups 
+        WHERE id = ?`, id,
+    ).Scan(
+        &group.ID,
+        &group.Name,
+        &group.Description,
+        &group.CreatedAt,
+        &group.UpdatedAt,
+    )
+    if err == sql.ErrNoRows {
+        return nil, nil
+    }
+    if err != nil {
+        return nil, err
+    }
+    return &group, nil
 }
 
 func (m *GroupModel) AddWord(groupID, wordID int64) error {
@@ -64,3 +150,4 @@ func (m *GroupModel) GetGroupWords(groupID int64) ([]GroupWord, error) {
         groupWords = append(groupWords, gw)
     }
     return groupWords, nil
+}

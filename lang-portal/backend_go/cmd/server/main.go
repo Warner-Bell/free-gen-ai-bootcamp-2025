@@ -12,10 +12,11 @@ import (
     "github.com/go-chi/cors"
     _ "github.com/mattn/go-sqlite3"
 
-    "lang-portal/internal/models"
-    "lang-portal/internal/handlers/words"
-    "lang-portal/internal/handlers/groups"
-    "lang-portal/internal/handlers/sessions"
+    "backend_go/internal/models"
+    "backend_go/internal/handlers/words"
+    "backend_go/internal/handlers/groups"
+    "backend_go/internal/handlers/sessions"
+    "backend_go/internal/handlers/dashboard"
 )
 
 func main() {
@@ -35,11 +36,13 @@ func main() {
     wordModel := models.NewWordModel(db)
     groupModel := models.NewGroupModel(db)
     sessionModel := models.NewStudySessionModel(db)
+    dashboardModel := models.NewDashboardModel(db)
 
     // Initialize handlers
     wordHandler := words.NewHandler(wordModel)
     groupHandler := groups.NewHandler(groupModel)
     sessionHandler := sessions.NewHandler(sessionModel)
+    dashboardHandler := dashboard.NewHandler(dashboardModel)
 
     // Initialize router
     r := chi.NewRouter()
@@ -92,9 +95,9 @@ func main() {
         r.Get("/sessions/group/{groupId}", sessionHandler.GetSessionsByGroup)
 
         // Dashboard endpoints
-        r.Get("/dashboard/stats", sessionHandler.GetDashboardStats)
-        r.Get("/dashboard/recent-sessions", sessionHandler.GetRecentSessions)
-        r.Get("/dashboard/progress", sessionHandler.GetLearningProgress)
+        r.Get("/dashboard/stats", dashboardHandler.GetDashboardStats)
+        r.Get("/dashboard/recent-sessions", dashboardHandler.GetRecentSessions)
+        r.Get("/dashboard/progress", dashboardHandler.GetLearningProgress)
     })
 
     // Start server

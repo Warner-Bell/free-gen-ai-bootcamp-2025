@@ -7,7 +7,7 @@ import (
     "strconv"
 
     "github.com/go-chi/chi/v5"
-    "lang-portal/internal/models"
+    "backend_go/internal/models"
 )
 
 type Handler struct {

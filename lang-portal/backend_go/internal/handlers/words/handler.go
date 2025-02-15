@@ -6,7 +6,7 @@ import (
     "net/http"
     "strconv"
 
-    "lang-portal/internal/models"
+    "backend_go/internal/models"
 )
 
 type Handler struct {
