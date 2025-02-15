@@ -287,7 +287,7 @@ touch db/migrations/001_initial_schema.sql
 touch db/seeds/initial_words.sql
 
 # Initialize go module
-go mod init language-portal
+go mod init lang-portal
 
 # Create empty words.db
 touch words.db
