@@ -1,0 +1,26 @@
+# Build
+/build/
+
+# Database
+*.db
+*.db-journal
+
+# IDE
+.idea/
+.vscode/
+
+# Dependencies
+/vendor/
+
+# Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool
+*.out
