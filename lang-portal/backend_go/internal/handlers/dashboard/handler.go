@@ -1,4 +1,3 @@
-// internal/handlers/dashboard/handler.go
 package dashboard
 
 import (
@@ -9,44 +8,23 @@ import (
 )
 
 type Handler struct {
-    dashboardModel *models.DashboardModel
+    model *models.DashboardModel
 }
 
-func NewHandler(dashboardModel *models.DashboardModel) *Handler {
-    return &Handler{dashboardModel: dashboardModel}
+func NewHandler(model *models.DashboardModel) *Handler {
+    return &Handler{model: model}
 }
 
-func (h *Handler) GetDashboardStats(w http.ResponseWriter, r *http.Request) {
-    stats, err := h.dashboardModel.GetStats()
-    if err != nil {
-        http.Error(w, err.Error(), http.StatusInternalServerError)
-        return
-    }
-
-    w.Header().Set("Content-Type", "application/json")
-    json.NewEncoder(w).Encode(stats)
+type DashboardResponse struct {
+    TotalWords     int                    `json:"total_words"`
+    TotalGroups    int                    `json:"total_groups"`
+    RecentWords    []models.Word          `json:"recent_words"`
+    RecentGroups   []models.Group         `json:"recent_groups"`
+    RecentSessions []models.StudySession  `json:"recent_sessions"`
 }
 
-func (h *Handler) GetRecentSessions(w http.ResponseWriter, r *http.Request) {
-    sessions, err := h.dashboardModel.GetRecentSessions(10) // Get last 10 sessions
-    if err != nil {
-        http.Error(w, err.Error(), http.StatusInternalServerError)
-        return
-    }
-
-    w.Header().Set("Content-Type", "application/json")
-    json.NewEncoder(w).Encode(map[string]interface{}{
-        "sessions": sessions,
-    })
-}
-
-func (h *Handler) GetLearningProgress(w http.ResponseWriter, r *http.Request) {
-    progress, err := h.dashboardModel.GetLearningProgress()
-    if err != nil {
-        http.Error(w, err.Error(), http.StatusInternalServerError)
-        return
-    }
-
-    w.Header().Set("Content-Type", "application/json")
-    json.NewEncoder(w).Encode(progress)
+func (h *Handler) GetDashboard(w http.ResponseWriter, r *http.Request) {
+    response := DashboardResponse{}
+    // TODO: Implement dashboard data retrieval
+    json.NewEncoder(w).Encode(response)
 }

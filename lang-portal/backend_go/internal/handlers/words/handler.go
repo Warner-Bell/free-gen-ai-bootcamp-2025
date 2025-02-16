@@ -1,112 +1,143 @@
-// Package words handles word-related HTTP endpoints
 package words
 
 import (
-	"encoding/json"
-	"net/http"
-	"strconv"
+    "encoding/json"
+    "net/http"
+    "strconv"
 
-	"free-gen-ai-bootcamp-2025/lang-portal/backend_go/internal/models"
-	"github.com/go-chi/chi/v5"
+    "github.com/go-chi/chi/v5"
+    "free-gen-ai-bootcamp-2025/lang-portal/backend_go/internal/models"
 )
 
 type Handler struct {
-	wordModel *models.WordModel
+    model *models.WordModel
 }
 
-func NewHandler(wordModel *models.WordModel) *Handler {
-	return &Handler{wordModel: wordModel}
+func NewHandler(model *models.WordModel) *Handler {
+    return &Handler{model: model}
 }
 
 func (h *Handler) GetWords(w http.ResponseWriter, r *http.Request) {
-	page, _ := strconv.Atoi(r.URL.Query().Get("page"))
-	limit, _ := strconv.Atoi(r.URL.Query().Get("limit"))
-	if limit == 0 {
-		limit = 10
-	}
-	offset := page * limit
-	
-	words, total, err := h.wordModel.GetWords(offset, limit)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+    offset, _ := strconv.Atoi(r.URL.Query().Get("offset"))
+    limit, _ := strconv.Atoi(r.URL.Query().Get("limit"))
 
-	response := map[string]interface{}{
-		"words": words,
-		"total": total,
-	}
-	json.NewEncoder(w).Encode(response)
+    if limit == 0 {
+        limit = 10
+    }
+
+    words, total, err := h.model.GetWords(offset, limit)
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+
+    response := struct {
+        Words []models.Word `json:"words"`
+        Total int          `json:"total"`
+    }{
+        Words: words,
+        Total: total,
+    }
+
+    json.NewEncoder(w).Encode(response)
+}
+
+func (h *Handler) SearchWords(w http.ResponseWriter, r *http.Request) {
+    query := r.URL.Query().Get("q")
+    offset, _ := strconv.Atoi(r.URL.Query().Get("offset"))
+    limit, _ := strconv.Atoi(r.URL.Query().Get("limit"))
+
+    if limit == 0 {
+        limit = 10
+    }
+
+    words, total, err := h.model.SearchWords(query, offset, limit)
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+
+    response := struct {
+        Words []models.Word `json:"words"`
+        Total int          `json:"total"`
+    }{
+        Words: words,
+        Total: total,
+    }
+
+    json.NewEncoder(w).Encode(response)
 }
 
 func (h *Handler) CreateWord(w http.ResponseWriter, r *http.Request) {
-	var word models.Word
-	if err := json.NewDecoder(r.Body).Decode(&word); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
+    var word models.Word
+    if err := json.NewDecoder(r.Body).Decode(&word); err != nil {
+        http.Error(w, err.Error(), http.StatusBadRequest)
+        return
+    }
 
-	if err := h.wordModel.Create(&word); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+    if err := h.model.Create(&word); err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
 
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(word)
+    w.WriteHeader(http.StatusCreated)
+    json.NewEncoder(w).Encode(word)
 }
 
 func (h *Handler) GetWord(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "id")
-	wordID, err := strconv.ParseInt(id, 10, 64)
-	if err != nil {
-		http.Error(w, "Invalid word ID", http.StatusBadRequest)
-		return
-	}
+    id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
+    if err != nil {
+        http.Error(w, "Invalid ID", http.StatusBadRequest)
+        return
+    }
 
-	word, err := h.wordModel.GetByID(wordID)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+    word, err := h.model.GetByID(id)
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
 
-	json.NewEncoder(w).Encode(word)
+    if word == nil {
+        http.NotFound(w, r)
+        return
+    }
+
+    json.NewEncoder(w).Encode(word)
 }
 
 func (h *Handler) UpdateWord(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "id")
-	wordID, err := strconv.ParseInt(id, 10, 64)
-	if err != nil {
-		http.Error(w, "Invalid word ID", http.StatusBadRequest)
-		return
-	}
+    id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
+    if err != nil {
+        http.Error(w, "Invalid ID", http.StatusBadRequest)
+        return
+    }
 
-	var word models.Word
-	if err := json.NewDecoder(r.Body).Decode(&word); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	word.ID = wordID
+    var word models.Word
+    if err := json.NewDecoder(r.Body).Decode(&word); err != nil {
+        http.Error(w, err.Error(), http.StatusBadRequest)
+        return
+    }
 
-	if err := h.wordModel.Update(&word); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+    word.ID = id
+    if err := h.model.Update(&word); err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
 
-	json.NewEncoder(w).Encode(word)
+    json.NewEncoder(w).Encode(word)
 }
 
 func (h *Handler) DeleteWord(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "id")
-	wordID, err := strconv.ParseInt(id, 10, 64)
-	if err != nil {
-		http.Error(w, "Invalid word ID", http.StatusBadRequest)
-		return
-	}
+    id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
+    if err != nil {
+        http.Error(w, "Invalid ID", http.StatusBadRequest)
+        return
+    }
 
-	if err := h.wordModel.Delete(wordID); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+    if err := h.model.Delete(id); err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
 
-	w.WriteHeader(http.StatusNoContent)
+    w.WriteHeader(http.StatusNoContent)
 }
