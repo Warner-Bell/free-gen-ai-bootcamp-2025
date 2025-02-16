@@ -1,5 +1,5 @@
 // backend_go/go.mod
-module github.com/warner/lang-portal/backend_go
+module free-gen-ai-bootcamp-2025/lang-portal/backend_go
 
 go 1.18
 

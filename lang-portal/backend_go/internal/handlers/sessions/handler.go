@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"backend_go/internal/models"
+	"free-gen-ai-bootcamp-2025/lang-portal/backend_go/internal/models"
 	"github.com/go-chi/chi/v5"
 )
 

@@ -5,7 +5,7 @@ import (
     "encoding/json"
     "net/http"
 
-    "backend_go/internal/models"
+    "free-gen-ai-bootcamp-2025/lang-portal/backend_go/internal/models"
 )
 
 type Handler struct {

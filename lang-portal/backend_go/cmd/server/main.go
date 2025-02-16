@@ -12,13 +12,13 @@ import (
     "github.com/go-chi/cors"
     _ "github.com/mattn/go-sqlite3"
 
-    "backend_go/internal/models"
-    "backend_go/internal/handlers/words"
-    "backend_go/internal/handlers/groups"
-    "backend_go/internal/handlers/sessions"
-    "backend_go/internal/handlers/dashboard"
-    "backend_go/internal/handlers/settings"
-    "backend_go/internal/handlers/study_activities"
+    "free-gen-ai-bootcamp-2025/lang-portal/backend_go/internal/models"
+    "free-gen-ai-bootcamp-2025/lang-portal/backend_go/internal/handlers/words"
+    "free-gen-ai-bootcamp-2025/lang-portal/backend_go/internal/handlers/groups"
+    "free-gen-ai-bootcamp-2025/lang-portal/backend_go/internal/handlers/sessions"
+    "free-gen-ai-bootcamp-2025/lang-portal/backend_go/internal/handlers/dashboard"
+    "free-gen-ai-bootcamp-2025/lang-portal/backend_go/internal/handlers/settings"
+    "free-gen-ai-bootcamp-2025/lang-portal/backend_go/internal/handlers/study_activities"
 )
 
 func main() {

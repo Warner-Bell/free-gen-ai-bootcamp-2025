@@ -32,13 +32,8 @@ func Build() error {
         return err
     }
 
-    // Initialize vendor directory
-    if err := exec.Command("bash", "vendor-init.sh").Run(); err != nil {
-        return fmt.Errorf("failed to initialize vendor: %v", err)
-    }
-
-    // Then build
-    cmd := exec.Command("go", "build", "-mod=vendor", "-o", filepath.Join(buildDir, binName), "./cmd/server")
+    // Build using module mode
+    cmd := exec.Command("go", "build", "-mod=mod", "-o", filepath.Join(buildDir, binName), "./cmd/server")
     cmd.Stdout = os.Stdout
     cmd.Stderr = os.Stderr
     return cmd.Run()

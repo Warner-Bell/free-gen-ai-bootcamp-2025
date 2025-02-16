@@ -10,12 +10,12 @@ find . -name "*.go" ! -name "*_test.go"
 
 2. Verify models directory is in GOPATH:
 ```bash
-go list -f '{{.Dir}}' github.com/warner/lang-portal/backend_go/internal/models
+go list -f '{{.Dir}}' free-gen-ai-bootcamp-2025/lang-portal/backend_go/internal/models
 ```
 
 3. Check module dependencies:
 ```bash
-go mod why github.com/warner/lang-portal/backend_go/internal/models
+go mod why free-gen-ai-bootcamp-2025/lang-portal/backend_go/internal/models
 ```
 
 This will help verify that all necessary files are being found and included in the build process.

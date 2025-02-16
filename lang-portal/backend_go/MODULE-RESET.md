@@ -1,6 +1,6 @@
 ## Complete Module Reset Instructions
 
-The undefined method errors are likely due to cached module information. The module path was changed from `backend_go` to `github.com/warner/lang-portal/backend_go`, which requires a complete reset:
+The undefined method errors are likely due to cached module information. The module path was changed from `backend_go` to `free-gen-ai-bootcamp-2025/lang-portal/backend_go`, which requires a complete reset:
 
 1. Make the fix script executable and run it:
 ```bash
@@ -25,7 +25,7 @@ rm -rf vendor/
 
 3. Reinitialize module:
 ```bash
-go mod edit -module github.com/warner/lang-portal/backend_go
+go mod edit -module free-gen-ai-bootcamp-2025/lang-portal/backend_go
 go mod tidy
 ```
 
