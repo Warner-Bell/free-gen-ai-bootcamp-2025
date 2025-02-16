@@ -1,19 +1,25 @@
 // internal/models/word.go
+
 package models
 
 import (
     "database/sql"
-    "time"
 )
 
+// internal/models/word.go
+
 type Word struct {
-    ID        int64     `json:"id"`
-    Japanese  string    `json:"japanese"`
-    Romaji    string    `json:"romaji"`
-    English   string    `json:"english"`
-    CreatedAt time.Time `json:"created_at"`
-    UpdatedAt time.Time `json:"updated_at"`
+    ID          int       `json:"id"`
+    Word        string    `json:"word"`
+    Translation string    `json:"translation"`
+    Notes       string    `json:"notes"`
+    Japanese    string    `json:"japanese"`
+    Romaji      string    `json:"romaji"`
+    English     string    `json:"english"`
+    CreatedAt   time.Time `json:"created_at"`
+    UpdatedAt   time.Time `json:"updated_at"`
 }
+
 
 type WordModel struct {
     db *sql.DB
@@ -23,33 +29,68 @@ func NewWordModel(db *sql.DB) *WordModel {
     return &WordModel{db: db}
 }
 
-func (m *WordModel) GetAll(page, perPage int) ([]Word, int, error) {
-    // Get total count first
-    var totalCount int
-    err := m.db.QueryRow("SELECT COUNT(*) FROM words").Scan(&totalCount)
+// GetWords returns words with pagination
+func (m *WordModel) GetWords(offset, limit int) ([]Word, int, error) {
+    // First, get total count
+    var total int
+    err := m.db.QueryRow("SELECT COUNT(*) FROM words").Scan(&total)
     if err != nil {
         return nil, 0, err
     }
-    offset := (page - 1) * perPage
-    rows, err := m.db.Query(`
-        SELECT id, japanese, romaji, english, created_at, updated_at 
-        FROM words 
-        ORDER BY id 
-        LIMIT ? OFFSET ?`, 
-        perPage, offset)
+
+    // Then get the words for the current page
+    rows, err := m.db.Query("SELECT id, word, translation, notes FROM words LIMIT ? OFFSET ?", limit, offset)
     if err != nil {
-        return nil, err
+        return nil, 0, err
     }
     defer rows.Close()
 
     var words []Word
     for rows.Next() {
         var w Word
-        err := rows.Scan(&w.ID, &w.Japanese, &w.Romaji, &w.English, &w.CreatedAt, &w.UpdatedAt)
+        err := rows.Scan(&w.ID, &w.Word, &w.Translation, &w.Notes)
         if err != nil {
-            return nil, err
+            return nil, 0, err
         }
         words = append(words, w)
     }
-    return words, totalCount, nil
+
+    return words, total, nil
 }
+
+// SearchWords searches words based on a query string
+func (m *WordModel) SearchWords(query string, offset, limit int) ([]Word, int, error) {
+    // First, get total count for the search
+    var total int
+    err := m.db.QueryRow(
+        "SELECT COUNT(*) FROM words WHERE word LIKE ? OR translation LIKE ?",
+        "%"+query+"%", "%"+query+"%",
+    ).Scan(&total)
+    if err != nil {
+        return nil, 0, err
+    }
+
+    // Then get the matching words
+    rows, err := m.db.Query(
+        "SELECT id, word, translation, notes FROM words WHERE word LIKE ? OR translation LIKE ? LIMIT ? OFFSET ?",
+        "%"+query+"%", "%"+query+"%", limit, offset,
+    )
+    if err != nil {
+        return nil, 0, err
+    }
+    defer rows.Close()
+
+    var words []Word
+    for rows.Next() {
+        var w Word
+        err := rows.Scan(&w.ID, &w.Word, &w.Translation, &w.Notes)
+        if err != nil {
+            return nil, 0, err
+        }
+        words = append(words, w)
+    }
+
+    return words, total, nil
+}
+
+// Add other methods like GetWord, CreateWord, UpdateWord, DeleteWord...

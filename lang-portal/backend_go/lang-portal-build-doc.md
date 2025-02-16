@@ -104,6 +104,7 @@ The goal is to generate detailed JSON responses for each API endpoint, ensuring 
 ```
 
 This structured approach ensures clarity, consistency, and alignment with your project needs. Let me know if you need any further refinements! 🚀
+
 ---
 <br>
 <br>
@@ -608,4 +609,42 @@ Implement error handling improvements?
 
 Let me know which part you'd like me to focus on next.
 
+---
+<br>
+<br>
 
+
+# **Code generation Goes Off The Rails**
+
+### **Issue:**
+
+Working in the `chat` tab of Q Developer, the assistant ran into trouble implementing the `mage` piece. After installing `mage`, I began to get mutiple errors trying to run the commands recommended by the assistant. 
+
+I would feed back each error and that would trigger a review and update of code that was not complete or accurate. This seemed to be the case for most of the generated code files, and it became quickly apparent that this approach was untennable, and would provide more confusion and frustration than answers.
+
+### **Observations**
+
+After several rounds of scattershot ai troublshooting, the assistanct became so delusional the only rational action was to put it out of both of our myseries, and blow the chat away and return to fight another day.
+
+### **Course of Action**
+
+Remembering there is a difference between using Q-Developer regular chat and the `/dev` I went took a look at the docs here:
+;https://docs.aws.amazon.com/amazonq/latest/qdeveloper-ug/software-dev.html 
+
+I then took the same prompt I used originally, but this time I used the `/dev` for a Q-Dev chat and the initial results looked promising.
+
+**Prompt:**
+```
+I need to build an api backend for my language portal app. all required tech specs are in the 'backend-tech-spec.md' file and ux context can be found in the 'frontend-tech-spec.md'. I have aready begun, review all the files in my workspace and complete the code build. 
+```
+
+**Q-Dev Response:**
+  ```
+Output from Q-Dev can be found here: H:\Cloud-Lab\..git\Gen-AI-Bootcamp\free-gen-ai-bootcamp-2025\lang-portal\backend_go\q-dev-output.md 
+```
+
+
+**Result:**
+  ```
+After a bit more TS Q-Dev seems to have corrected all the issues, and I am able to run the mage commands presented earlier.
+```

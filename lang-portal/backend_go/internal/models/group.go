@@ -113,9 +113,9 @@ func (m *GroupModel) GetGroupWords(groupID int64) ([]GroupWord, error) {
             wg.word_id,
             wg.group_id,
             wg.created_at,
-            w.japanese,
-            w.romaji,
-            w.english,
+            w.word,
+            w.translation,
+            w.notes,
             w.created_at,
             w.updated_at
         FROM word_groups wg
@@ -136,16 +136,16 @@ func (m *GroupModel) GetGroupWords(groupID int64) ([]GroupWord, error) {
             &gw.WordID,
             &gw.GroupID,
             &gw.CreatedAt,
-            &w.Japanese,
-            &w.Romaji,
-            &w.English,
+            &w.Word,
+            &w.Translation,
+            &w.Notes,
             &w.CreatedAt,
             &w.UpdatedAt,
         )
         if err != nil {
             return nil, err
         }
-        w.ID = gw.WordID
+        w.ID = int(gw.WordID)
         gw.Word = w
         groupWords = append(groupWords, gw)
     }

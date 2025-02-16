@@ -17,6 +17,8 @@ import (
     "backend_go/internal/handlers/groups"
     "backend_go/internal/handlers/sessions"
     "backend_go/internal/handlers/dashboard"
+    "backend_go/internal/handlers/settings"
+    "backend_go/internal/handlers/study_activities"
 )
 
 func main() {
