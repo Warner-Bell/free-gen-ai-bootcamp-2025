@@ -145,7 +145,7 @@ func (m *GroupModel) GetGroupWords(groupID int64) ([]GroupWord, error) {
         if err != nil {
             return nil, err
         }
-        w.ID = int(gw.WordID)
+        w.ID = gw.WordID
         gw.Word = w
         groupWords = append(groupWords, gw)
     }
