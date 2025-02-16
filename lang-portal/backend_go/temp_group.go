@@ -14,7 +14,7 @@ type Group struct {
 }
 
 type GroupModel struct {
-	DB *sql.DB
+	db *sql.DB
 }
 
 type GroupWord struct {
@@ -24,8 +24,8 @@ type GroupWord struct {
 	Word      Word      `json:"word"`
 }
 
-func NewGroupModel(DB *sql.DB) *GroupModel {
-	return &GroupModel{DB: db}
+func NewGroupModel(db *sql.DB) *GroupModel {
+	return &GroupModel{db: db}
 }
 
 func (m *GroupModel) GetAll() ([]Group, error) {

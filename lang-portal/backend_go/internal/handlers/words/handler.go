@@ -2,11 +2,12 @@
 package words
 
 import (
+	"database/sql"
 	"encoding/json"
 	"net/http"
 	"strconv"
 
-	"backend_go/internal/models"
+	"github.com/warner/lang-portal/backend_go/internal/models"
 	"github.com/go-chi/chi/v5"
 )
 
