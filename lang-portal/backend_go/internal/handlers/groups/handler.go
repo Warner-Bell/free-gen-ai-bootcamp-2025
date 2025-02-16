@@ -39,7 +39,10 @@ func (h *Handler) CreateGroup(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    group, err := h.groupModel.Create(req.Name)
+    group := &Group{
+        Name: req.Name,
+    }
+    err := h.groupModel.Create(group)
     if err != nil {
         http.Error(w, err.Error(), http.StatusInternalServerError)
         return
