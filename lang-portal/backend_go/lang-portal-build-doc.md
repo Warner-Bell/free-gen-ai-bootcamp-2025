@@ -116,7 +116,6 @@ The goal is to .
 
 ## **Approach**
 1. **Use Amazon Q Developer**  
-
 2. **Following Andrew’s Instructions**  
 
 ---
@@ -648,3 +647,21 @@ Output from Q-Dev can be found here: H:\Cloud-Lab\..git\Gen-AI-Bootcamp\free-gen
   ```
 After a bit more TS Q-Dev seems to have corrected all the issues, and I am able to run the mage commands presented earlier.
 ```
+
+---
+
+# **Backend API Test Code**
+
+## **Objective**
+The goal is to we want to make sure the api is actually working.
+
+## **Approach**
+1. **Use Amazon Q Developer**  
+2. **Following Andrew’s Instructions**  
+
+---
+
+## **Task Execution**
+
+### **Build API Backend**
+**Prompt:**
