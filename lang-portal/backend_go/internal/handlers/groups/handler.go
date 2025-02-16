@@ -1,3 +1,4 @@
+// Package groups handles group-related HTTP endpoints
 package groups
 
 import (
@@ -5,7 +6,7 @@ import (
     "net/http"
     "strconv"
 
-    "github.com/go-chi/chi/v5"
+    "github.com/go-chi/chi"
     "backend_go/internal/models"
 )
 
@@ -18,56 +19,103 @@ func NewHandler(groupModel *models.GroupModel) *Handler {
 }
 
 func (h *Handler) GetGroups(w http.ResponseWriter, r *http.Request) {
-    groups, err := h.groupModel.GetAll()
+    page, _ := strconv.Atoi(r.URL.Query().Get("page"))
+    groups, err := h.groupModel.GetGroups(page)
     if err != nil {
         http.Error(w, err.Error(), http.StatusInternalServerError)
         return
     }
-
-    w.Header().Set("Content-Type", "application/json")
-    json.NewEncoder(w).Encode(map[string]interface{}{
-        "groups": groups,
-    })
+    json.NewEncoder(w).Encode(groups)
 }
 
 func (h *Handler) CreateGroup(w http.ResponseWriter, r *http.Request) {
-    var req struct {
-        Name string `json:"name"`
-    }
-    if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+    var group models.Group
+    if err := json.NewDecoder(r.Body).Decode(&group); err != nil {
         http.Error(w, err.Error(), http.StatusBadRequest)
         return
     }
 
-    group := &Group{
-        Name: req.Name,
-    }
-    err := h.groupModel.Create(group)
-    if err != nil {
+    if err := h.groupModel.CreateGroup(&group); err != nil {
         http.Error(w, err.Error(), http.StatusInternalServerError)
         return
     }
 
-    w.Header().Set("Content-Type", "application/json")
+    w.WriteHeader(http.StatusCreated)
     json.NewEncoder(w).Encode(group)
 }
 
+func (h *Handler) GetGroup(w http.ResponseWriter, r *http.Request) {
+    id := chi.URLParam(r, "id")
+    groupID, err := strconv.Atoi(id)
+    if err != nil {
+        http.Error(w, "Invalid group ID", http.StatusBadRequest)
+        return
+    }
+
+    group, err := h.groupModel.GetGroupByID(groupID)
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusNotFound)
+        return
+    }
+
+    json.NewEncoder(w).Encode(group)
+}
+
+func (h *Handler) UpdateGroup(w http.ResponseWriter, r *http.Request) {
+    id := chi.URLParam(r, "id")
+    groupID, err := strconv.Atoi(id)
+    if err != nil {
+        http.Error(w, "Invalid group ID", http.StatusBadRequest)
+        return
+    }
+
+    var group models.Group
+    if err := json.NewDecoder(r.Body).Decode(&group); err != nil {
+        http.Error(w, err.Error(), http.StatusBadRequest)
+        return
+    }
+
+    group.ID = groupID
+    if err := h.groupModel.UpdateGroup(&group); err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+
+    json.NewEncoder(w).Encode(group)
+}
+
+func (h *Handler) DeleteGroup(w http.ResponseWriter, r *http.Request) {
+    id := chi.URLParam(r, "id")
+    groupID, err := strconv.Atoi(id)
+    if err != nil {
+        http.Error(w, "Invalid group ID", http.StatusBadRequest)
+        return
+    }
+
+    if err := h.groupModel.DeleteGroup(groupID); err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+
+    w.WriteHeader(http.StatusNoContent)
+}
+
 func (h *Handler) AddWordToGroup(w http.ResponseWriter, r *http.Request) {
-    groupID, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
+    groupID, err := strconv.Atoi(chi.URLParam(r, "id"))
     if err != nil {
         http.Error(w, "Invalid group ID", http.StatusBadRequest)
         return
     }
 
     var req struct {
-        WordID int64 `json:"word_id"`
+        WordID int `json:"wordId"`
     }
     if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
         http.Error(w, err.Error(), http.StatusBadRequest)
         return
     }
 
-    if err := h.groupModel.AddWord(groupID, req.WordID); err != nil {
+    if err := h.groupModel.AddWordToGroup(groupID, req.WordID); err != nil {
         http.Error(w, err.Error(), http.StatusInternalServerError)
         return
     }
@@ -76,30 +124,28 @@ func (h *Handler) AddWordToGroup(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) RemoveWordFromGroup(w http.ResponseWriter, r *http.Request) {
-    groupID, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
+    groupID, err := strconv.Atoi(chi.URLParam(r, "id"))
     if err != nil {
         http.Error(w, "Invalid group ID", http.StatusBadRequest)
         return
     }
 
-    var req struct {
-        WordID int64 `json:"word_id"`
-    }
-    if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-        http.Error(w, err.Error(), http.StatusBadRequest)
+    wordID, err := strconv.Atoi(chi.URLParam(r, "wordId"))
+    if err != nil {
+        http.Error(w, "Invalid word ID", http.StatusBadRequest)
         return
     }
 
-    if err := h.groupModel.RemoveWord(groupID, req.WordID); err != nil {
+    if err := h.groupModel.RemoveWordFromGroup(groupID, wordID); err != nil {
         http.Error(w, err.Error(), http.StatusInternalServerError)
         return
     }
 
-    w.WriteHeader(http.StatusOK)
+    w.WriteHeader(http.StatusNoContent)
 }
 
 func (h *Handler) GetGroupWords(w http.ResponseWriter, r *http.Request) {
-    groupID, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
+    groupID, err := strconv.Atoi(chi.URLParam(r, "id"))
     if err != nil {
         http.Error(w, "Invalid group ID", http.StatusBadRequest)
         return
@@ -111,8 +157,5 @@ func (h *Handler) GetGroupWords(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    w.Header().Set("Content-Type", "application/json")
-    json.NewEncoder(w).Encode(map[string]interface{}{
-        "words": words,
-    })
+    json.NewEncoder(w).Encode(words)
 }
