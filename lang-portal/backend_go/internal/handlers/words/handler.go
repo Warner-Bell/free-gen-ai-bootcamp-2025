@@ -27,7 +27,7 @@ func (h *Handler) GetWords(w http.ResponseWriter, r *http.Request) {
         perPage = 10
     }
 
-    words, err := h.wordModel.GetAll(page, perPage)
+    words, totalCount, err := h.wordModel.GetAll(page, perPage)
     if err != nil {
         http.Error(w, err.Error(), http.StatusInternalServerError)
         return

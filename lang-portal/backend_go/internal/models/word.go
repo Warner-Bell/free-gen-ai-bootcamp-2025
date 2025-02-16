@@ -23,7 +23,13 @@ func NewWordModel(db *sql.DB) *WordModel {
     return &WordModel{db: db}
 }
 
-func (m *WordModel) GetAll(page, perPage int) ([]Word, error) {
+func (m *WordModel) GetAll(page, perPage int) ([]Word, int, error) {
+    // Get total count first
+    var totalCount int
+    err := m.db.QueryRow("SELECT COUNT(*) FROM words").Scan(&totalCount)
+    if err != nil {
+        return nil, 0, err
+    }
     offset := (page - 1) * perPage
     rows, err := m.db.Query(`
         SELECT id, japanese, romaji, english, created_at, updated_at 
@@ -45,5 +51,5 @@ func (m *WordModel) GetAll(page, perPage int) ([]Word, error) {
         }
         words = append(words, w)
     }
-    return words, nil
+    return words, totalCount, nil
 }
