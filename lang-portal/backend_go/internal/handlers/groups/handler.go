@@ -113,9 +113,9 @@ func (m *GroupModel) GetGroupWords(groupID int64) ([]Word, error) {
     }
     defer rows.Close()
 
-    var words []Word
+    var words []models.Word
     for rows.Next() {
-        var word Word
+        var word models.Word
         err := rows.Scan(
             &word.ID,
             &word.Japanese,
