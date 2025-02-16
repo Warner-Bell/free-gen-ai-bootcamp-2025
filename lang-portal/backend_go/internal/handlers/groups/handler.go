@@ -1,133 +1,115 @@
-// internal/models/group.go
-package models
+package groups
 
 import (
-    "database/sql"
-    "time"
+    "encoding/json"
+    "net/http"
+    "strconv"
+
+    "github.com/go-chi/chi/v5"
+    "backend_go/internal/models"
 )
 
-type Group struct {
-    ID        int64     `json:"id"`
-    Name      string    `json:"name"`
-    CreatedAt time.Time `json:"created_at"`
-    UpdatedAt time.Time `json:"updated_at"`
+type Handler struct {
+    groupModel *models.GroupModel
 }
 
-type GroupModel struct {
-    db *sql.DB
+func NewHandler(groupModel *models.GroupModel) *Handler {
+    return &Handler{groupModel: groupModel}
 }
 
-func NewGroupModel(db *sql.DB) *GroupModel {
-    return &GroupModel{db: db}
-}
-
-func (m *GroupModel) GetAll() ([]Group, error) {
-    query := `SELECT id, name, created_at, updated_at FROM groups ORDER BY id`
-    rows, err := m.db.Query(query)
+func (h *Handler) GetGroups(w http.ResponseWriter, r *http.Request) {
+    groups, err := h.groupModel.GetAll()
     if err != nil {
-        return nil, err
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
     }
-    defer rows.Close()
 
-    var groups []Group
-    for rows.Next() {
-        var group Group
-        err := rows.Scan(
-            &group.ID,
-            &group.Name,
-            &group.CreatedAt,
-            &group.UpdatedAt,
-        )
-        if err != nil {
-            return nil, err
-        }
-        groups = append(groups, group)
-    }
-    return groups, nil
+    w.Header().Set("Content-Type", "application/json")
+    json.NewEncoder(w).Encode(map[string]interface{}{
+        "groups": groups,
+    })
 }
 
-func (m *GroupModel) Create(name string) (*Group, error) {
-    group := &Group{
-        Name:      name,
-        CreatedAt: time.Now(),
-        UpdatedAt: time.Now(),
+func (h *Handler) CreateGroup(w http.ResponseWriter, r *http.Request) {
+    var req struct {
+        Name string `json:"name"`
+    }
+    if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+        http.Error(w, err.Error(), http.StatusBadRequest)
+        return
     }
 
-    query := `
-        INSERT INTO groups (name, created_at, updated_at)
-        VALUES (?, ?, ?)
-        RETURNING id`
-    
-    err := m.db.QueryRow(
-        query,
-        group.Name,
-        group.CreatedAt,
-        group.UpdatedAt,
-    ).Scan(&group.ID)
-
+    group, err := h.groupModel.Create(req.Name)
     if err != nil {
-        return nil, err
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
     }
 
-    return group, nil
+    w.Header().Set("Content-Type", "application/json")
+    json.NewEncoder(w).Encode(group)
 }
 
-func (m *GroupModel) GetByID(id int64) (*Group, error) {
-    group := &Group{}
-    query := `SELECT id, name, created_at, updated_at FROM groups WHERE id = ?`
-    err := m.db.QueryRow(query, id).Scan(
-        &group.ID,
-        &group.Name,
-        &group.CreatedAt,
-        &group.UpdatedAt,
-    )
+func (h *Handler) AddWordToGroup(w http.ResponseWriter, r *http.Request) {
+    groupID, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
     if err != nil {
-        return nil, err
+        http.Error(w, "Invalid group ID", http.StatusBadRequest)
+        return
     }
-    return group, nil
+
+    var req struct {
+        WordID int64 `json:"word_id"`
+    }
+    if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+        http.Error(w, err.Error(), http.StatusBadRequest)
+        return
+    }
+
+    if err := h.groupModel.AddWord(groupID, req.WordID); err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+
+    w.WriteHeader(http.StatusOK)
 }
 
-func (m *GroupModel) AddWord(groupID, wordID int64) error {
-    query := `INSERT INTO word_groups (group_id, word_id) VALUES (?, ?)`
-    _, err := m.db.Exec(query, groupID, wordID)
-    return err
-}
-
-func (m *GroupModel) RemoveWord(groupID, wordID int64) error {
-    query := `DELETE FROM word_groups WHERE group_id = ? AND word_id = ?`
-    _, err := m.db.Exec(query, groupID, wordID)
-    return err
-}
-
-func (m *GroupModel) GetGroupWords(groupID int64) ([]Word, error) {
-    query := `
-        SELECT w.id, w.japanese, w.romaji, w.english, w.created_at, w.updated_at
-        FROM words w
-        JOIN word_groups wg ON w.id = wg.word_id
-        WHERE wg.group_id = ?
-        ORDER BY w.id`
-    
-    rows, err := m.db.Query(query, groupID)
+func (h *Handler) RemoveWordFromGroup(w http.ResponseWriter, r *http.Request) {
+    groupID, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
     if err != nil {
-        return nil, err
+        http.Error(w, "Invalid group ID", http.StatusBadRequest)
+        return
     }
-    defer rows.Close()
 
-    var words []models.Word
-    for rows.Next() {
-        var word models.Word
-        err := rows.Scan(
-            &word.ID,
-            &word.Japanese,
-            &word.Romaji,
-            &word.English,
-            &word.CreatedAt,
-            &word.UpdatedAt,
-        )
-        if err != nil {
-            return nil, err
-        }
-        words = append(words, word)
+    var req struct {
+        WordID int64 `json:"word_id"`
     }
-    return words, nil
+    if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+        http.Error(w, err.Error(), http.StatusBadRequest)
+        return
+    }
+
+    if err := h.groupModel.RemoveWord(groupID, req.WordID); err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+
+    w.WriteHeader(http.StatusOK)
+}
+
+func (h *Handler) GetGroupWords(w http.ResponseWriter, r *http.Request) {
+    groupID, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
+    if err != nil {
+        http.Error(w, "Invalid group ID", http.StatusBadRequest)
+        return
+    }
+
+    words, err := h.groupModel.GetGroupWords(groupID)
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+
+    w.Header().Set("Content-Type", "application/json")
+    json.NewEncoder(w).Encode(map[string]interface{}{
+        "words": words,
+    })
 }
