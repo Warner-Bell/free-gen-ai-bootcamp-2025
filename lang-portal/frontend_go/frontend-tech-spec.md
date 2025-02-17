@@ -1,8 +1,27 @@
-Here’s your corrected and refined version, improving grammar, spelling, and clarity:
-
----
 
 # **Frontend Technical Specifications**
+
+# **Backend Server Technical Specifications**
+
+## **Business Goal**
+
+A language learning school wants to build a prototype learning portal that will serve three primary functions:
+
+- **Vocabulary Inventory:** A repository of possible vocabulary that can be learned.
+- **Learning Record Store (LRS):** A system to track correct and incorrect vocabulary practice scores.
+- **Unified Launchpad:** A centralized interface to access various learning applications.
+
+You have been tasked with creating the frontend API of the application.
+The fractional CTO has made strong recommendation that you settle on a frontend stack that is being commonly adopted and optimized for AI prototyping services.
+
+The frontend application should powered by my backend API.(prompt fot tech spec)
+
+Technical Restrictions:
+The technical stack should be the following:
+Typescript (statically typed javascript)
+Tailwind CSS (css framework)
+Vite.js (frontend tool)
+ShadCN (UI components)
 
 ## **Pages**
 
