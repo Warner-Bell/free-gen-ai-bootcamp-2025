@@ -26,25 +26,29 @@ go mod download
 mage build
 ```
 
-## Code Changes Made
-The following changes have been implemented to fix the build errors:
+# Start the server
+mage run
 
-1. In `internal/handlers/words/handler.go`:
-   - Changed `GetAll` to `GetWords` with correct pagination parameters
-   - Updated to use `(page-1)*perPage` for proper offset calculation
+# Stop the server
+Ctrl+C (in the terminal where server is running)
 
-2. In `internal/handlers/groups/handler.go`:
-   - Fixed group creation to use proper `Group` struct
-   - Updated return value handling for `Create` method
+# Clean build artifacts
+mage clean
 
-3. Added `internal/handlers/groups/types.go`:
-   - Added type alias for proper Group type handling
+# Tidy dependencies
+go mod tidy
 
-## Troubleshooting
+# Full rebuild (clean and build)
+mage clean && mage build
 
-If you see "go: no modules specified":
-- Make sure you're in the `lang-portal/backend_go` directory
-- Verify go.mod exists
-- Run `go mod download` before building
+# Reset database (not implemented)
+mage resetdb
 
-If build still fails, verify GOPATH and GOROOT are set correctly.
+# Run migrations (not implemented)
+mage migrate
+
+# Run API endpoint tests
+./test-api-endpoints.sh
+
+# Run unit tests (not implemented)
+mage test
