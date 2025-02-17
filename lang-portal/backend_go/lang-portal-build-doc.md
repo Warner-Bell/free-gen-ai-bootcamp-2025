@@ -646,7 +646,11 @@ Output from Q-Dev can be found here: H:\Cloud-Lab\..git\Gen-AI-Bootcamp\free-gen
 
 **Result:**
   ```
-After a bit more TS Q-Dev seems to have corrected all the issues, and I am able to run the mage commands presented earlier.
+After a bit more TS Q-Dev seems to have corrected some of the issues, and I am able to run some of the mage commands presented earlier. Q-dev can create code and files, however, when it is prompted it takes it upon itself to go through and make changes without input from prompter, it adds files and code in random places, and you cannnot do anything or review code until it has completed its process. 
+
+I began using a combination of `chat` and `/dev` which gave me more controlled results, chat would explain, while /dev would make changes, I also made changes manually as /dev sometimes made changes that would take us back to previous issues, making the process go in circles.
+
+Eventually I cleared all the errors and was able to run the mage build successfully and begin testing of the APIs.
 ```
 ---
 <br>
