@@ -18,7 +18,7 @@ type Word struct {
 }
 
 type WordModel struct {
-    DB *sql.DB // Fixed: Changed db to DB to match the struct field name used in NewWordModel
+    DB *sql.DB
 }
 
 func NewWordModel(db *sql.DB) *WordModel {
@@ -27,17 +27,12 @@ func NewWordModel(db *sql.DB) *WordModel {
 
 func (m *WordModel) GetWords(offset, limit int) ([]Word, int, error) {
     var total int
-    err := m.DB.QueryRow("SELECT COUNT(*) FROM words").Scan(&total) // Fixed: Changed m.db to m.DB
+    err := m.DB.QueryRow("SELECT COUNT(*) FROM words").Scan(&total)
     if err != nil {
         return nil, 0, err
     }
 
-    rows, err := m.DB.Query(` // Fixed: Changed m.db to m.DB
-        SELECT id, word, translation, notes, japanese, romaji, english, created_at, updated_at 
-        FROM words 
-        ORDER BY id 
-        LIMIT ? OFFSET ?`,
-        limit, offset)
+    rows, err := m.DB.Query("SELECT id, word, translation, notes, japanese, romaji, english, created_at, updated_at FROM words ORDER BY id LIMIT ? OFFSET ?", limit, offset)
     if err != nil {
         return nil, 0, err
     }
@@ -56,12 +51,9 @@ func (m *WordModel) GetWords(offset, limit int) ([]Word, int, error) {
 }
 
 func (m *WordModel) Create(word *Word) error {
-    query := `
-        INSERT INTO words (word, translation, notes, japanese, romaji, english, created_at, updated_at)
-        VALUES (?, ?, ?, ?, ?, ?, DATETIME('now'), DATETIME('now'))
-        RETURNING id`
+    query := "INSERT INTO words (word, translation, notes, japanese, romaji, english, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, DATETIME('now'), DATETIME('now')) RETURNING id"
     
-    err := m.DB.QueryRow(query, // Fixed: Changed m.db to m.DB
+    err := m.DB.QueryRow(query,
         word.Word,
         word.Translation,
         word.Notes,
@@ -73,12 +65,9 @@ func (m *WordModel) Create(word *Word) error {
 
 func (m *WordModel) GetByID(id int64) (*Word, error) {
     word := &Word{}
-    query := `
-        SELECT id, word, translation, notes, japanese, romaji, english, created_at, updated_at
-        FROM words
-        WHERE id = ?`
+    query := "SELECT id, word, translation, notes, japanese, romaji, english, created_at, updated_at FROM words WHERE id = ?"
     
-    err := m.DB.QueryRow(query, id).Scan( // Fixed: Changed m.db to m.DB
+    err := m.DB.QueryRow(query, id).Scan(
         &word.ID,
         &word.Word,
         &word.Translation,
@@ -96,12 +85,9 @@ func (m *WordModel) GetByID(id int64) (*Word, error) {
 }
 
 func (m *WordModel) Update(word *Word) error {
-    query := `
-        UPDATE words
-        SET word = ?, translation = ?, notes = ?, japanese = ?, romaji = ?, english = ?, updated_at = DATETIME('now')
-        WHERE id = ?`
+    query := "UPDATE words SET word = ?, translation = ?, notes = ?, japanese = ?, romaji = ?, english = ?, updated_at = DATETIME('now') WHERE id = ?"
     
-    result, err := m.DB.Exec(query, // Fixed: Changed m.db to m.DB
+    result, err := m.DB.Exec(query,
         word.Word,
         word.Translation,
         word.Notes,
@@ -125,7 +111,7 @@ func (m *WordModel) Update(word *Word) error {
 
 func (m *WordModel) Delete(id int64) error {
     query := "DELETE FROM words WHERE id = ?"
-    result, err := m.DB.Exec(query, id) // Fixed: Changed m.db to m.DB
+    result, err := m.DB.Exec(query, id)
     if err != nil {
         return err
     }
@@ -142,20 +128,13 @@ func (m *WordModel) Delete(id int64) error {
 
 func (m *WordModel) SearchWords(query string, offset, limit int) ([]Word, int, error) {
     var total int
-    err := m.DB.QueryRow(` // Fixed: Changed m.db to m.DB
-        SELECT COUNT(*) FROM words 
-        WHERE word LIKE ? OR translation LIKE ? OR notes LIKE ?`,
+    err := m.DB.QueryRow("SELECT COUNT(*) FROM words WHERE word LIKE ? OR translation LIKE ? OR notes LIKE ?",
         "%"+query+"%", "%"+query+"%", "%"+query+"%").Scan(&total)
     if err != nil {
         return nil, 0, err
     }
 
-    rows, err := m.DB.Query(` // Fixed: Changed m.db to m.DB
-        SELECT id, word, translation, notes, japanese, romaji, english, created_at, updated_at
-        FROM words
-        WHERE word LIKE ? OR translation LIKE ? OR notes LIKE ?
-        ORDER BY id
-        LIMIT ? OFFSET ?`,
+    rows, err := m.DB.Query("SELECT id, word, translation, notes, japanese, romaji, english, created_at, updated_at FROM words WHERE word LIKE ? OR translation LIKE ? OR notes LIKE ? ORDER BY id LIMIT ? OFFSET ?",
         "%"+query+"%", "%"+query+"%", "%"+query+"%", limit, offset)
     if err != nil {
         return nil, 0, err

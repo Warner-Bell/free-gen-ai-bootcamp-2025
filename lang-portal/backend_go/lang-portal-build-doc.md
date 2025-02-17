@@ -664,6 +664,69 @@ The goal is to we want to make sure the api is actually working.
 ---
 
 ## **Task Execution**
+```
+mage clean && mage build
+mage initdb
+./build/backend_go
+```
 
-### **Build API Backend**
+
+### **Testing**
 **Prompt:**
+```
+warner**@Office1:/mnt/h/Cloud-Lab/free-gen-ai-bootcamp-2025/lang-portal/backend_go$** mage clean && mage build
+mage initdb
+./build/backend_go
+Cleaning...
+Cleaning...
+Building...
+Initializing database...
+2025/02/16 18:14:05 Server starting on port 8080...
+```
+
+**Response**
+Perfect! Your server is now running successfully. Let's break down what we see:
+
+Cleaning... - Successfully cleaned old build artifacts
+
+Building... - Successfully built the new executable
+
+Initializing database... - Successfully created/updated the database with our schema
+
+Server starting on port 8080... - The server is now running and listening for requests [1]
+
+You can now test the API endpoints. In a new terminal, you can try:
+
+# Test the words endpoint
+curl http://localhost:8080/api/words
+
+# Test the groups endpoint
+curl http://localhost:8080/api/groups
+
+# Test the dashboard endpoint
+curl http://localhost:8080/api/dashboard
+
+```
+Let's add some test data to verify everything is working. You can use curl to create some records:
+
+# Create a group
+curl -X POST http://localhost:8080/api/groups \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Basic Phrases"}'
+
+# Create a word
+curl -X POST http://localhost:8080/api/words \
+  -H "Content-Type: application/json" \
+  -d '{
+    "word": "こんにちは",
+    "translation": "Hello",
+    "notes": "Formal greeting",
+    "japanese": "こんにちは",
+    "romaji": "konnichiwa",
+    "english": "hello"
+  }'
+```
+
+Created a test script to test all endpoints `./test-api-endpoints.sh`
+
+all tests passed!

@@ -11,6 +11,8 @@ import (
 
     "github.com/magefile/mage/mg"
     "github.com/magefile/mage/sh"
+    _ "github.com/mattn/go-sqlite3"
+    "database/sql"
 )
 
 const (
@@ -67,11 +69,12 @@ func Dev() error {
 // InitDB initializes the database with schema
 func InitDB() error {
     fmt.Println("Initializing database...")
-    
-    // Create migrations directory if it doesn't exist
-    if err := os.MkdirAll(migrateDir, 0755); err != nil {
-        return err
+
+    db, err := sql.Open("sqlite3", dbFile)
+    if err != nil {
+        return fmt.Errorf("error opening database: %v", err)
     }
+    defer db.Close()
 
     // Create the database schema
     schema := `
@@ -79,25 +82,28 @@ func InitDB() error {
 
     CREATE TABLE IF NOT EXISTS words (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        japanese TEXT NOT NULL,
-        romaji TEXT NOT NULL,
-        english TEXT NOT NULL,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        word TEXT NOT NULL,
+        translation TEXT,
+        notes TEXT,
+        japanese TEXT,
+        romaji TEXT,
+        english TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
 
     CREATE TABLE IF NOT EXISTS groups (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
+        name TEXT NOT NULL UNIQUE,
         description TEXT,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
 
     CREATE TABLE IF NOT EXISTS word_groups (
         word_id INTEGER,
         group_id INTEGER,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (word_id, group_id),
         FOREIGN KEY (word_id) REFERENCES words(id) ON DELETE CASCADE,
         FOREIGN KEY (group_id) REFERENCES groups(id) ON DELETE CASCADE
@@ -105,10 +111,10 @@ func InitDB() error {
 
     CREATE TABLE IF NOT EXISTS study_sessions (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        group_id INTEGER,
         activity_name TEXT NOT NULL,
-        start_time DATETIME DEFAULT CURRENT_TIMESTAMP,
-        end_time DATETIME,
+        group_id INTEGER,
+        start_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        end_time TIMESTAMP,
         FOREIGN KEY (group_id) REFERENCES groups(id) ON DELETE SET NULL
     );
 
@@ -117,7 +123,7 @@ func InitDB() error {
         word_id INTEGER,
         study_session_id INTEGER,
         correct BOOLEAN NOT NULL,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (word_id) REFERENCES words(id) ON DELETE CASCADE,
         FOREIGN KEY (study_session_id) REFERENCES study_sessions(id) ON DELETE CASCADE
     );
@@ -130,35 +136,10 @@ func InitDB() error {
     CREATE INDEX IF NOT EXISTS idx_study_sessions_group_id ON study_sessions(group_id);
     `
 
-    // Write schema to migration file
-    schemaFile := filepath.Join(migrateDir, "001_initial_schema.sql")
-    if err := os.WriteFile(schemaFile, []byte(schema), 0644); err != nil {
-        return err
-    }
-
-    // Execute schema
-    db, err := exec.Command("sqlite3", dbFile).StdinPipe()
+    _, err = db.Exec(schema)
     if err != nil {
-        return err
+        return fmt.Errorf("error creating schema: %v", err)
     }
 
-    cmd := exec.Command("sqlite3", dbFile)
-    cmd.Stdout = os.Stdout
-    cmd.Stderr = os.Stderr
-
-    if err := cmd.Start(); err != nil {
-        return err
-    }
-
-    if _, err := db.Write([]byte(schema)); err != nil {
-        return err
-    }
-
-    db.Close()
-    return cmd.Wait()
-}
-
-// All runs all the main tasks
-func All() {
-    mg.SerialDeps(Clean, Lint, Test, Build)
+    return nil
 }

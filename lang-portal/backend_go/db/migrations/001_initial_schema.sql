@@ -1,13 +1,17 @@
 -- db/migrations/001_initial_schema.sql
 CREATE TABLE IF NOT EXISTS words (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    japanese TEXT NOT NULL,
-    romaji TEXT NOT NULL,
-    english TEXT NOT NULL,
+    word TEXT NOT NULL,
+    translation TEXT,
+    notes TEXT,
+    japanese TEXT,
+    romaji TEXT,
+    english TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Rest of your schema remains the same
 CREATE TABLE IF NOT EXISTS groups (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL UNIQUE,
