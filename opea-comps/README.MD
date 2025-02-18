@@ -6,7 +6,6 @@ You can get the model_id that ollama will launch from the [Ollama Library](https
 
 https://ollama.com/library/llama3.2
 
-eg. LLM_MODEL_ID="llama3.2:1b"
 
 ### Getting the Host IP
 
@@ -53,7 +52,7 @@ Q: Which port is being mapped 8008->141414
 
 In this case 8008 is the port that host machine will access. the other other in the guest port (the port of the service inside container)
 
-Q: If we pass the LLM_MODEL_Id to the ollama server will it download the model when on start?
+Q: If we pass the LLM_MODEL_Id to the ollama server will it download the model on start?
 
 It does not appear so. The ollama CLI might be running multiple APIs so you need to call the /pull api before trying to generat text
 
