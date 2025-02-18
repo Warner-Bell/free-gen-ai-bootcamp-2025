@@ -1,8 +1,6 @@
 
 # **Frontend Technical Specifications**
 
-# **Backend Server Technical Specifications**
-
 ## **Business Goal**
 
 A language learning school wants to build a prototype learning portal that will serve three primary functions:
