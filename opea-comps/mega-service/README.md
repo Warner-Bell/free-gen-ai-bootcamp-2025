@@ -46,8 +46,11 @@ curl -X POST http://localhost:9000/v1/example-service \
     "model": "test-model",
     "max_tokens": 100,
     "temperature": 0.7
-  }'
+  }' \-o response.json
 ```
 
-##**Parked MS Implementation**
+## **Parked MS Implementation**
 We spent an hour working through the MS implementation, we learned chat Q&A can work with Ollama, we need to figure out what the correct request handle is. we paused the research and TS to revist at a later time.
+
+## **Continue MS Implementation**
+Came back and went through the vid again ccomleted the demonstrated steps, the implementation looks to be successful, albeit I'm still a bit foggy on what exactly i'm looking at..lbs
