@@ -1,4 +1,6 @@
-# **Backend API: Defining JSON Responses and Tasks**
+# **Backend API:** 
+
+## **Defining JSON Responses and Tasks**
 
 ## **Objective**
 The goal is to generate detailed JSON responses for each API endpoint, ensuring they match the frontend's expectations as specified in the `frontend-tech-spec.md` file. This will enhance API documentation and provide clarity for development and integration.
@@ -112,7 +114,7 @@ This structured approach ensures clarity, consistency, and alignment with your p
 # **Backend API Implement Backend with Q**
 
 ## **Objective**
-The goal is to .
+The goal is to implement an api backend using go-lang with the assistance of Q.
 
 ## **Approach**
 1. **Use Amazon Q Developer**  
@@ -172,7 +174,7 @@ Would you like me to proceed with generating any specific part of this implement
 ## **Observations**
 - Q created a unique plan for building the api backend, compared to Andrew's example with Claude.
 - Q did not use the directory structure outlined in my backend file.
-- 
+- Q went beyond perameters listed in the tech-spec and included additional methods in its plan.
 
 ## **Course of Action**
 1. Ask Q why it did not use the directory structure in the file.(`Why didn't you use the file structure shown in the backend-tech-spec.md file?`)
@@ -300,15 +302,16 @@ Note: You'll need to run this script from the parent directory where you want ba
 
 ## **Observations**
 - Q created a script that can be run to create the directories, but did not create them itself(not sure it can).
-- It suggests in its output it can create the code files, but I'm doubtful.
+- It suggests in its output it can create the code files, but I'm doubtful. It also suggest using the code to create a script to run.
 
 ## **Course of Action**
-1. Run the commands to create the directories and proceed.(`Why didn't you use the file structure shown in the backend-tech-spec.md file?`)
+1. Manually run the commands to create the directories and proceed.
 2. Save progress so I don't lose this entire file again like I did an hour ago!
 
 **Result:**
 
 Directories and files created.
+
 
 
 ## **Code Implementation**
@@ -357,6 +360,11 @@ Adding database seeding functionality
 Let me know which part you'd like me to focus on next.
 
 ---
+
+
+`**In an effort to keep moveing forward, I began manually creating the files and pasting the code from Q's outputs.**`
+
+
 **Next Prompt:**
 ```
 This is fine what is next?.
