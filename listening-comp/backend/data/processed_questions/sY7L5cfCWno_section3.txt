@@ -1,0 +1,55 @@
+<question number="1">
+問題3から質問を抽出します。
+Introduction:
+寝ます
+Conversation:
+他の人に何と言いますか
+Question:
+1おつかれさま
+2おやすみなさい
+3また明日
+</question>
+
+<question number="2">
+Introduction:
+学校へ出かけます
+Conversation:
+家族に何と言いますか
+Question:
+1失礼します
+2今行きます
+3行ってきます
+</question>
+
+<question number="3">
+Introduction:
+電車に乗ります
+Conversation:
+東京まで何分で行くか聞きたいです
+Question:
+1どのぐらいかかりますか
+2いくらですか
+3今何時ですか
+</question>
+
+<question number="4">
+Introduction:
+タクシーの中です
+Conversation:
+どこへ行きたいか言います
+Question:
+1近くの駅までお願いします
+2近くの駅まで行きます
+3近くの駅まで来てください
+</question>
+
+<question number="5">
+Introduction:
+喫茶店にいます
+Conversation:
+コーヒーを飲みたいです
+Question:
+1コーヒーを願います
+2コーヒーを取ってください
+3コーヒーがあります
+</question>

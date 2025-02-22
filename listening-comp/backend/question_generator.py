@@ -2,33 +2,44 @@ import boto3
 import json
 from typing import Dict, List, Optional
 from backend.vector_store import QuestionVectorStore
+import logging
+
+# Configure logging
+logger = logging.getLogger(__name__)
 
 class QuestionGenerator:
     def __init__(self):
         """Initialize Bedrock client and vector store"""
         self.bedrock_client = boto3.client('bedrock-runtime', region_name="us-east-1")
         self.vector_store = QuestionVectorStore()
-        self.model_id = "amazon.nova-lite-v1:0"
+        self.model_id = "anthropic.claude-v2:1"  # Updated to use Claude v2
 
     def _invoke_bedrock(self, prompt: str) -> Optional[str]:
         """Invoke Bedrock with the given prompt"""
         try:
-            messages = [{
-                "role": "user",
-                "content": [{
-                    "text": prompt
-                }]
-            }]
+            body = json.dumps({
+                "anthropic_version": "bedrock-2023-05-31",
+                "max_tokens": 1000,
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": prompt
+                    }
+                ],
+                "temperature": 0.7,
+                "top_p": 0.9,
+            })
             
-            response = self.bedrock_client.converse(
+            response = self.bedrock_client.invoke_model(
                 modelId=self.model_id,
-                messages=messages,
-                inferenceConfig={"temperature": 0.7}
+                body=body
             )
             
-            return response['output']['message']['content'][0]['text']
+            response_body = json.loads(response.get('body').read())
+            return response_body.get('content')[0].get('text')
+            
         except Exception as e:
-            print(f"Error invoking Bedrock: {str(e)}")
+            logger.error(f"Error invoking Bedrock: {str(e)}")
             return None
 
     def generate_similar_question(self, section_num: int, topic: str) -> Dict:
@@ -130,17 +141,17 @@ class QuestionGenerator:
             
             # Ensure we have exactly 4 options
             if 'Options' not in question or len(question.get('Options', [])) != 4:
-                # Use default options if we don't have exactly 4
                 question['Options'] = [
-                    "ピザを食べる",
-                    "ハンバーガーを食べる",
-                    "サラダを食べる",
-                    "パスタを食べる"
+                    "Option 1",
+                    "Option 2",
+                    "Option 3",
+                    "Option 4"
                 ]
             
             return question
+            
         except Exception as e:
-            print(f"Error parsing generated question: {str(e)}")
+            logger.error(f"Error parsing generated question: {str(e)}")
             return None
 
     def get_feedback(self, question: Dict, selected_answer: int) -> Dict:
@@ -180,9 +191,9 @@ class QuestionGenerator:
             feedback = json.loads(response.strip())
             return feedback
         except:
-            # If JSON parsing fails, return a basic response with a default correct answer
+            # If JSON parsing fails, return a basic response
             return {
                 "correct": False,
                 "explanation": "Unable to generate detailed feedback. Please try again.",
-                "correct_answer": 1  # Default to first option
+                "correct_answer": 1
             }
