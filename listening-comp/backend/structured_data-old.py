@@ -4,7 +4,7 @@ import os
 
 # Model ID
 #MODEL_ID = "amazon.nova-micro-v1:0"
-MODEL_ID = "amazon.nova-lite-v1:0"
+MODEL_ID = "anthropic.claude-3-haiku-20240307-v1:0"
 
 class TranscriptStructurer:
     def __init__(self, model_id: str = MODEL_ID):
@@ -130,7 +130,7 @@ class TranscriptStructurer:
         }]
 
         try:
-            response = self.bedrock_client.converse(
+            response = self.bedrock_client.invoke_model(
                 modelId=self.model_id,
                 messages=messages,
                 inferenceConfig={"temperature": 0}

@@ -1,210 +1,300 @@
 import boto3
 import json
 import os
-import logging
-from typing import Dict, List, Tuple, Optional
-from datetime import datetime
 import tempfile
 import subprocess
+import time
+from typing import Dict, List, Optional, Tuple, Union
+import pathlib
 
-# Service Wrappers for AWS Bedrock and Polly
 class BedrockServiceWrapper:
     def __init__(self, model_id: str):
-        """Initialize the AWS Bedrock runtime client."""
-        self.bedrock_runtime = boto3.client('bedrock-runtime')
+        """Initialize the Bedrock service wrapper."""
+        self.bedrock = boto3.client('bedrock-runtime')
         self.model_id = model_id
 
-    def converse(self, prompt: str) -> str:
-        """
-        Handles conversation with Claude model through Amazon Bedrock.
-        Ensures response is in valid JSON format.
-        """
+    def invoke_model(self, prompt: str) -> str:
+        """Invoke Bedrock model with the given prompt."""
         try:
-            body = {
-                "anthropic_version": "bedrock-2023-05-31",
-                "max_tokens": 4096,
-                "messages": [
-                    {
-                        "role": "user",
-                        "content": prompt
-                    }
-                ]
-            }
-
-            response = self.bedrock_runtime.invoke_model(
+            response = self.bedrock.invoke_model(
                 modelId=self.model_id,
-                body=json.dumps(body)
+                body=json.dumps({
+                    "prompt": prompt,
+                    "max_tokens_to_sample": 1000,
+                    "temperature": 0.1,
+                    "top_p": 0.9,
+                })
             )
-            
-            response_body = json.loads(response['body'].read().decode('utf-8'))
-
-            # 🚀 Print the full raw response from Bedrock
-            print(f"\nDEBUG: Full Bedrock Response:\n{json.dumps(response_body, indent=2)}\n")
-
-            if "content" in response_body and isinstance(response_body["content"], list):
-                json_content = response_body["content"][0].get("text", "").strip()
-
-                # 🚀 Print the extracted content (should be JSON)
-                print(f"\nDEBUG: Extracted Content:\n{json_content}\n")
-
-                if json_content.startswith("[") and json_content.endswith("]"):
-                    return json_content
-                else:
-                    raise Exception(f"Invalid JSON format received: {json_content}")
-
-            raise Exception(f"Unexpected response format from Bedrock: {response_body}")
-
+            response_body = json.loads(response.get('body').read())
+            return response_body.get('completion', '')
         except Exception as e:
-            raise Exception(f"Bedrock converse error: {str(e)}")
-
-    def invoke(self, prompt: str) -> str:
-        """Alias for converse method to maintain compatibility."""
-        return self.converse(prompt)
-
+            print(f"\n🚨 [ERROR] Error calling Bedrock: {str(e)}")
+            return ""
 
 class PollyServiceWrapper:
     def __init__(self):
-        """Initialize the Amazon Polly client."""
+        """Initialize Polly service wrapper."""
         self.polly = boto3.client('polly')
-        
+
     def synthesize_speech(self, text: str, voice_id: str) -> Optional[bytes]:
-        """Generate speech using Amazon Polly and return audio bytes."""
+        """Generate speech from text using Amazon Polly."""
         try:
             response = self.polly.synthesize_speech(
                 Engine='neural',
-                Text=text,
+                LanguageCode='ja-JP',
                 OutputFormat='mp3',
+                Text=text,
+                TextType='text',
                 VoiceId=voice_id
             )
-            
-            if 'AudioStream' in response:
-                return response['AudioStream'].read()
-            else:
-                raise Exception(f"Polly did not return an AudioStream: {response}")
-
+            if "AudioStream" in response:
+                return response["AudioStream"].read()
+            return None
         except Exception as e:
-            print(f"Error synthesizing speech: {str(e)}")
+            print(f"\n🚨 [ERROR] Polly synthesis failed: {str(e)}")
             return None
 
-
-# Main Audio Generator Class
 class AudioGenerator:
     def __init__(self):
-        """Initialize the audio generator with AWS clients."""
-        self.bedrock = BedrockServiceWrapper("anthropic.claude-3-haiku-20240307-v1:0")
+        """Initialize the audio generator."""
+        self.bedrock = BedrockServiceWrapper("anthropic.claude-v2")
         self.polly = PollyServiceWrapper()
-        
-        # Define Japanese neural voices by gender
-        self.voices = {
-            'male': ['Takumi'],
-            'female': ['Kazuha'],
-            'announcer': 'Takumi'  # Default announcer voice
-        }
-        
-        # Create audio output directory
+        print("🟢 Initializing audio generator...")
         self.audio_dir = os.path.join(
-            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-            "frontend/static/audio"
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 
+            'frontend', 'public', 'audio'
         )
         os.makedirs(self.audio_dir, exist_ok=True)
 
-    def parse_conversation(self, question: Dict) -> List[Tuple[str, str, str]]:
-        """
-        Convert question into a format for audio generation.
-        Returns a list of (speaker, text, gender) tuples.
-        """
-        max_retries = 3
+    def parse_conversation(self, question: Union[str, Dict], max_retries: int = 3) -> List[Tuple[str, str, str]]:
+        """Parse the conversation using Bedrock Claude.
+        Returns a list of tuples containing (speaker, text, gender)."""
+        
+        # Convert Dict input to string if necessary
+        if isinstance(question, dict):
+            conversation = question.get("Conversation", "")
+            if not conversation:
+                raise ValueError("No conversation found in input dictionary")
+            question = conversation
+
+        # Extract dialogue lines
+        print("\n🟡 [INFO] Processing raw input:")
+        print("----------------------------------------")
+        print(question)
+        print("----------------------------------------\n")
+            
+        # Split into lines and clean up
+        lines = [line.strip() for line in question.split("\n") if line.strip()]
+        
+        # Process each line
+        dialogue_lines = []
+        for line in lines:
+            if ":" not in line:
+                continue
+                
+            if any(line.lower().startswith(p) for p in ['question', '質問', '会話', 'next', '次の']):
+                continue
+            
+            try:
+                speaker, text = line.split(":", 1)  # Split at first colon
+                speaker = speaker.strip()
+                text = text.strip()
+
+                if not text or not speaker:
+                    continue
+                
+                if any(p in speaker.lower() for p in ['question', '質問', '会話']):
+                    continue
+                
+                dialogue_lines.append((speaker, text))
+
+            except Exception as e:
+                print(f"\n⚠️ [WARNING] Skipping line due to error: {str(e)}")
+                continue
+                
+        if not dialogue_lines:
+            raise ValueError("No valid dialogue lines found in input")
+
+        print("\n🟢 [INFO] Extracted conversations:")
+        for speaker, text in dialogue_lines:
+            print(f"{speaker}: {text}")
+        print("----------------------------------------\n")
+
+        # Create prompt for gender inference
+        dialogue_text = "\n".join(f"{speaker}: {text}" for speaker, text in dialogue_lines)
+        prompt = f"""会話の各行について、話者の性別を推測してJSON形式で出力してください:
+
+例:
+田中: すみません、駅はどこですか。
+駅員: ここは新宿駅です。
+
+出力:
+[
+  {{"speaker": "田中", "text": "すみません、駅はどこですか。", "gender": "male"}},
+  {{"speaker": "駅員", "text": "ここは新宿駅です。", "gender": "male"}}
+]
+
+会話:
+{dialogue_text}
+
+上記の会話を同じJSON形式で出力してください。性別は話者から推測してください。"""
+
+        # Get gender inference from Claude
         for attempt in range(max_retries):
             try:
-                response = self.bedrock.converse(question["Conversation"])
-
-                print(f"DEBUG: Received response from Bedrock: {response}")  # Debugging 🚀
+                print("\n🔄 [INFO] Calling Bedrock for gender inference (attempt {}/{})".format(attempt + 1, max_retries))
                 
-                parts = json.loads(response)
+                # Get response from Bedrock
+                response = self.bedrock.invoke_model(prompt)
+                if not response:
+                    raise ValueError("Empty response from API")
 
-                # Ensure all required keys are present
-                for i, part in enumerate(parts):
-                    if "speaker" not in part or "text" not in part or "gender" not in part:
-                        raise Exception(f"Invalid format in part {i}: {part}")
+                # Find and extract JSON array
+                start_idx = response.find('[')
+                end_idx = response.rfind(']') + 1
+                if start_idx == -1 or end_idx == 0:
+                    print("\n🔍 [DEBUG] Raw API response:")
+                    print(response)
+                    raise ValueError("No JSON array found in response")
 
-                return [(p["speaker"], p["text"], p["gender"]) for p in parts]
+                # Parse JSON response
+                try:
+                    json_str = response[start_idx:end_idx]
+                    parts = json.loads(json_str)
+                except json.JSONDecodeError as e:
+                    print(f"\n🚨 [ERROR] Failed to decode JSON response: {str(e)}")
+                    print(f"\n🔍 [DEBUG] Failed JSON string: {json_str}")
+                    raise ValueError("Invalid JSON response")
 
-            except json.JSONDecodeError as e:
-                print(f"Attempt {attempt + 1} failed: Invalid JSON response - {e}")
-            except KeyError as e:
-                print(f"Attempt {attempt + 1} failed: Missing key in response - {e}")
+                # Validate response structure
+                if not isinstance(parts, list):
+                    raise ValueError("Invalid JSON structure - expected a list")
+
+                # Convert JSON objects to tuples
+                result = []
+                for part in parts:
+                    if isinstance(part, dict):
+                        speaker = part.get("speaker", "Unknown")
+                        text = part.get("text", "")
+                        gender = part.get("gender", "male")
+                        if text and speaker:
+                            result.append((speaker, text, gender))
+
+                # Validate final result
+                if not result:
+                    raise ValueError("No valid dialogue parts found in response")
+
+                if not self.validate_conversation_parts(result):
+                    raise ValueError("Invalid conversation structure")
+
+                print("\n✅ [INFO] Successfully parsed conversation with {} parts".format(len(result)))
+                return result
+
+                
+
             except Exception as e:
-                print(f"Attempt {attempt + 1} failed: {str(e)}")
+                print(f"\n⚠️ [WARNING] Attempt {attempt + 1} failed: {str(e)}")
+                if attempt < max_retries - 1:
+                    print("🔁 Retrying...")
+                    continue
+                
+                print("\n❌ [ERROR] Final failure after all retry attempts.")
+                if 'response' in locals():
+                    print("\n📤 [DEBUG] Raw response that caused failure:")
+                    print("----------------------------------------")
+                    print(response)
+                    print("----------------------------------------")
+                raise ValueError("Failed to parse conversation after all retry attempts")
 
-        raise Exception("Failed to parse conversation after multiple attempts")
-
-    def generate_audio(self, question: Dict) -> str:
-        """
-        Generate audio for the entire question.
-        Returns the path to the generated audio file.
-        """
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        output_file = os.path.join(self.audio_dir, f"question_{timestamp}.mp3")
+    def validate_conversation_parts(self, parts: List[Tuple[str, str, str]]) -> bool:
+        """Validate that conversation parts are well-formed.
+        Each part should be a tuple of (speaker, text, gender)."""
+        if not isinstance(parts, list) or not parts:
+            print("\n⚠️ [WARNING] Empty or invalid parts list")
+            return False
         
+        for part in parts:
+            if not isinstance(part, tuple) or len(part) != 3:
+                print(f"\n⚠️ [WARNING] Invalid part format: {part}")
+                return False
+            speaker, text, gender = part
+            if not all(isinstance(x, str) for x in (speaker, text, gender)):
+                print(f"\n⚠️ [WARNING] Invalid data types in part: {part}")
+                return False
+            if not all(x.strip() for x in (speaker, text, gender)):
+                print(f"\n⚠️ [WARNING] Empty strings in part: {part}")
+                return False
+        return True
+
+    def generate_audio(self, question: Union[str, Dict]) -> str:
+        """Generate audio from text using AWS Polly."""
         try:
-            # Parse conversation into parts
             parts = self.parse_conversation(question)
+            if not parts:
+                raise ValueError("No conversation parts to process")
 
-            # Generate audio for each part
-            audio_parts = []
+            audio_files = []
+            timestamp = int(time.time())
+            
             for speaker, text, gender in parts:
-                voice = self.get_voice_for_gender(gender)
-                print(f"Using voice {voice} for {speaker} ({gender})")
-                audio_file = self.generate_audio_part(text, voice)
+                voice_id = self.get_voice_for_gender(gender)
+                audio_file = self.generate_audio_part(text, voice_id)
                 if audio_file:
-                    audio_parts.append(audio_file)
+                    audio_files.append(audio_file)
+                else:
+                    print(f"\n⚠️ [WARNING] Failed to generate audio for: {text}")
 
-            # Combine all parts into final audio
-            if self.combine_audio_files(audio_parts, output_file):
+            if not audio_files:
+                raise ValueError("No audio files were generated")
+
+            # Combine all audio files
+            output_file = os.path.join(self.audio_dir, f'conversation_{timestamp}.mp3')
+            if self.combine_audio_files(audio_files, output_file):
                 return output_file
-            else:
-                raise Exception("Failed to combine audio files")
+            raise ValueError("Failed to combine audio files")
 
         except Exception as e:
-            if os.path.exists(output_file):
-                os.unlink(output_file)
-            raise Exception(f"Audio generation failed: {str(e)}")
+            print(f"\n🚨 [ERROR] Audio generation failed: {str(e)}")
+            return ""
 
     def get_voice_for_gender(self, gender: str) -> str:
-        """Get an appropriate voice for the given gender."""
-        return self.voices.get(gender, ["Takumi"])[0]  # Default to 'Takumi' if unknown
+        """Get appropriate voice ID based on gender."""
+        return "Kazuha" if gender.lower() == "female" else "Takumi"
 
     def generate_audio_part(self, text: str, voice_name: str) -> Optional[str]:
-        """Generate audio for a single part using Amazon Polly."""
-        audio_data = self.polly.synthesize_speech(text, voice_name)
-        if not audio_data:
+        """Generate audio for a single part of the conversation."""
+        try:
+            audio_data = self.polly.synthesize_speech(text, voice_name)
+            if not audio_data:
+                return None
+                
+            with tempfile.NamedTemporaryFile(suffix='.mp3', delete=False) as temp_file:
+                temp_file.write(audio_data)
+                return temp_file.name
+        except Exception as e:
+            print(f"\n🚨 [ERROR] Failed to generate audio part: {str(e)}")
             return None
-        
-        with tempfile.NamedTemporaryFile(suffix='.mp3', delete=False) as temp_file:
-            temp_file.write(audio_data)
-            return temp_file.name
 
     def combine_audio_files(self, audio_files: List[str], output_file: str) -> bool:
-        """Combine multiple audio files using ffmpeg."""
+        """Combine multiple audio files into one."""
         try:
             with tempfile.NamedTemporaryFile('w', suffix='.txt', delete=False) as f:
                 for audio_file in audio_files:
                     f.write(f"file '{audio_file}'\n")
-                file_list = f.name
-            
+                concat_list = f.name
+
             subprocess.run([
                 'ffmpeg', '-f', 'concat', '-safe', '0',
-                '-i', file_list,
-                '-c', 'copy',
-                output_file
-            ], check=True)
+                '-i', concat_list,
+                '-c', 'copy', output_file
+            ], check=True, capture_output=True)
+
+            # Clean up temporary files
+            os.unlink(concat_list)
+            for file in audio_files:
+                os.unlink(file)
 
             return True
         except Exception as e:
-            print(f"Error combining audio files: {str(e)}")
+            print(f"\n🚨 [ERROR] Failed to combine audio files: {str(e)}")
             return False
-        finally:
-            os.unlink(file_list)
-            for audio_file in audio_files:
-                if os.path.exists(audio_file):
-                    os.unlink(audio_file)

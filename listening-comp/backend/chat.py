@@ -2,11 +2,12 @@
 # bedrock_chat.py
 import boto3
 import streamlit as st
+import json
 from typing import Optional, Dict, Any
 
 
 # Model ID
-MODEL_ID = "amazon.nova-micro-v1:0"
+MODEL_ID = "anthropic.claude-3-haiku-20240307-v1:0"
 
 
 
@@ -21,19 +22,24 @@ class BedrockChat:
         if inference_config is None:
             inference_config = {"temperature": 0.7}
 
-        messages = [{
-            "role": "user",
-            "content": [{"text": message}]
-        }]
-
         try:
-            response = self.bedrock_client.converse(
-                modelId=self.model_id,
-                messages=messages,
-                inferenceConfig=inference_config
-            )
-            return response['output']['message']['content'][0]['text']
+            body = {
+                "anthropic_version": "bedrock-2023-05-31",
+                "messages": [{
+                    "role": "user",
+                    "content": message
+                }],
+                "max_tokens": 4096,
+                **inference_config
+            }
             
+            response = self.bedrock_client.invoke_model(
+                modelId=self.model_id,
+                body=json.dumps(body)
+            )
+            response_body = json.loads(response['body'].read())
+            return response_body['content'][0]['text']
+                
         except Exception as e:
             st.error(f"Error generating response: {str(e)}")
             return None
