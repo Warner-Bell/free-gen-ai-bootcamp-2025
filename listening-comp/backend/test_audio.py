@@ -25,26 +25,33 @@ test_question = {
 def test_audio_generation():
     print("Initializing audio generator...")
     generator = AudioGenerator()
-    
-    print("\nParsing conversation...")
-    parts = generator.parse_conversation(test_question)
-    
-    print("\nParsed conversation parts:")
-    for speaker, text, gender in parts:
-        print(f"Speaker: {speaker} ({gender})")
-        print(f"Text: {text}")
-        print("---")
-    
-    print("\nGenerating audio file...")
-    audio_file = generator.generate_audio(test_question)
-    print(f"Audio file generated: {audio_file}")
-    
-    return audio_file
 
-if __name__ == "__main__":
+    # Test question
+    test_question = """
+    次の会話を聞いて、質問に答えてください。
+    
+    田中: すみません、この電車は新宿駅に止まりますか。
+    駅員: はい、止まります。でも、次の電車の方が速く着きますよ。
+    田中: そうですか。何分後に来ますか。
+    駅員: 5分後です。
+    
+    質問: 田中さんはどうすれば良いですか。
+    """
+
+    print("\nParsing conversation...")
     try:
-        audio_file = test_audio_generation()
-        print("\nTest completed successfully!")
-        print(f"You can find the audio file at: {audio_file}")
+        parts = generator.parse_conversation(test_question)
+        print("\nParsed parts:")
+        for speaker, text, gender in parts:
+            print(f"Speaker: {speaker} ({gender})")
+            print(f"Text: {text}\n")
+
+        print("\nGenerating audio...")
+        audio_file = generator.generate_audio(test_question)
+        print(f"Audio generated: {audio_file}")
+
     except Exception as e:
         print(f"\nError during test: {str(e)}")
+
+if __name__ == "__main__":
+    test_audio_generation()

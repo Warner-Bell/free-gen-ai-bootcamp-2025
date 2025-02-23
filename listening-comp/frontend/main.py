@@ -200,10 +200,16 @@ def render_interactive_stage():
         
         with col2:
             st.subheader("Audio")
-            if st.session_state.current_audio:
-                # Display audio player
-                st.audio(st.session_state.current_audio)
+            if not st.session_state.current_question:
+                st.info("Generate a question to create audio.")
             elif st.session_state.current_question:
+                # Create audio control columns
+                audio_col1, audio_col2 = st.columns([3, 1])
+                
+                # Audio player column
+                with audio_col1:
+                    if st.session_state.current_audio and os.path.exists(st.session_state.current_audio):
+                        st.audio(st.session_state.current_audio)
                 # Show generate audio button
                 if st.button("Generate Audio"):
                     with st.spinner("Generating audio..."):
