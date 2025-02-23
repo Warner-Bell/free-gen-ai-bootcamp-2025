@@ -3,7 +3,7 @@ import boto3
 import os
 
 # Model ID
-#MODEL_ID = "amazon.nova-micro-v1:0"
+#MODEL_ID = ""
 MODEL_ID = "anthropic.claude-3-haiku-20240307-v1:0"
 
 class TranscriptStructurer:

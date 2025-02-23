@@ -13,7 +13,7 @@ introduction:
 conversation:
 question:
 
-I want to use Amazon Bedrock with the Amazon Nova micro model.
+I want to use Amazon Bedrock with the Amazon claud 3.5 haiku model.
 
 I have other code that can be used to figure out how to write the code over in the
 @get_transcript.py file. write the implementation for the data structure in the same style. Output the complete code here.
